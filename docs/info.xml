@@ -8,9 +8,9 @@
     <!-- Supply the following six elements in the order specified -->
     <!-- (Required) Release of MATLAB. Not currently used but required -->
     <!-- to parse the file -->
-    <matlabrelease>R2020a</matlabrelease>
+    <matlabrelease>R2021a</matlabrelease>
     <!-- (Required) Title of toolbox. Appears in the Contents pane -->
-    <name>FMCW MIMO-SAR Simulation and Image Reconstruction</name>
+    <name>THz and Sub-THz Imaging Toolbox</name>
     <!-- (Required) Label for the toolbox. pick one: -->
     <!-- matlab, toolbox, simulink, blockset, links_targets  -->
     <type>toolbox</type>

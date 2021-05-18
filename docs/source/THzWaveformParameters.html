@@ -1,0 +1,324 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="helpwin2.css"><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/shared/scripts/helpservices.js"></script><title>THzWaveformParameters - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">THzWaveformParameters - MATLAB File Help</td>
+            <td class="subheader-right"><a href="matlab:edit THzWaveformParameters">View code for THzWaveformParameters</a></td>
+         </tr>
+      </table>
+      <div class="title">THzWaveformParameters</div>
+      <div class="helptext"><pre><!--helptext -->  <span class="helptopic">THzWaveformParameters</span> The chirp parameters of the THz sensors under test
+ 
+  Copyright (C) 2021 Josiah W. Smith
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:doc('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.THzWaveformParameters')">THzWaveformParameters</a></td>
+            <td class="m-help">Intializes the WaveformParameters object taking the option&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.B')">B</a></td>
+            <td class="m-help">Bandwidth in Hz&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.K')">K</a></td>
+            <td class="m-help">Chirp slope in Hz/s&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Nk')">Nk</a></td>
+            <td class="m-help">Number of frequency/wavenumber samples&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.app')">app</a></td>
+            <td class="m-help">App handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.c')">c</a></td>
+            <td class="m-help">Speed of light in m/s&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.f')">f</a></td>
+            <td class="m-help">Instantaneous frequency vector&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.f0')">f0</a></td>
+            <td class="m-help">Starting frequency in Hz&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.fC')">fC</a></td>
+            <td class="m-help">Center frequency in Hz&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.fS')">fS</a></td>
+            <td class="m-help">Sampling frequency in Hz&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.isApp')">isApp</a></td>
+            <td class="m-help">Boolean whether or not to use the app functionality&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.k')">k</a></td>
+            <td class="m-help">Instantaneous wavenumber vector&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.lambda_m')">lambda_m</a></td>
+            <td class="m-help">Wavelength of center frequency&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.rangeMax_m')">rangeMax_m</a></td>
+            <td class="m-help">Unambiguous range in m&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.rangeResolution_m')">rangeResolution_m</a></td>
+            <td class="m-help">Range resolution in meters&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Compute')">Compute</a></td>
+            <td class="m-help">the parameters given the current values in the app&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Display')">Display</a></td>
+            <td class="m-help">the new calculated parameters in the app&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Get')">Get</a></td>
+            <td class="m-help">the parameters from the app&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Load')">Load</a></td>
+            <td class="m-help">the waveform parameters from a file&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Save')">Save</a></td>
+            <td class="m-help">the chirp parameters to a file&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.Update')">Update</a></td>
+            <td class="m-help">the FMCW chirp parameters from the app&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.
+               Help for THzWaveformParameters/addlistener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.
+               Help for THzWaveformParameters/delete is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.
+               Help for THzWaveformParameters/eq is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.
+               Help for THzWaveformParameters/findobj is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.
+               Help for THzWaveformParameters/findprop is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.ge')">ge</a></td>
+            <td class="m-help">&gt;= (GE)   Greater than or equal relation for handles.
+               Help for THzWaveformParameters/ge is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.gt')">gt</a></td>
+            <td class="m-help">&gt; (GT)   Greater than relation for handles.
+               Help for THzWaveformParameters/gt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.
+               Help for THzWaveformParameters/isvalid is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.le')">le</a></td>
+            <td class="m-help">&lt;= (LE)   Less than or equal relation for handles.
+               Help for THzWaveformParameters/le is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.
+               Help for THzWaveformParameters/listener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.lt')">lt</a></td>
+            <td class="m-help">&lt; (LT)   Less than relation for handles.
+               Help for THzWaveformParameters/lt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.
+               Help for THzWaveformParameters/ne is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.
+               Help for THzWaveformParameters/notify is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzWaveformParameters.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.
+               Help for THzWaveformParameters/ObjectBeingDestroyed is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>

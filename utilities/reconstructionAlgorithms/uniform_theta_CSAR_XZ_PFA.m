@@ -37,11 +37,11 @@ classdef uniform_theta_CSAR_XZ_PFA < handle
         k_vec               % Instantaneous wavenumber vector
         R0_m                % Radius of scan
         
-        fmcw                % fmcwChirpParameters object
-        ant                 % sarAntennaArray object
-        sar                 % sarScenario object
-        target              % sarTarget object
-        im                  % sarImage object
+        wav                 % A THzWaveformParameters object handle
+        ant                 % A THzAntennaArray object handle
+        scanner             % A THzScanner object handle
+        target              % A THzTarget object handle
+        im                  % A THzImageReconstruction object handle
     end
     
     methods
@@ -50,9 +50,9 @@ classdef uniform_theta_CSAR_XZ_PFA < handle
             % the imaging scenario and get the parameters from those object
             % handles
             
-            obj.fmcw = im.fmcw;
+            obj.wav = im.wav;
             obj.ant = im.ant;
-            obj.sar = im.sar;
+            obj.scanner = im.scanner;
             obj.target = im.target;
             obj.im = im;
             
@@ -64,8 +64,8 @@ classdef uniform_theta_CSAR_XZ_PFA < handle
             % from the object handles and verifying the parameters
             
             getParameters(obj);
-            verifyParameters(obj);
             verifyReconstruction(obj);
+            verifyParameters(obj);
         end
         
         function getParameters(obj)
@@ -84,32 +84,43 @@ classdef uniform_theta_CSAR_XZ_PFA < handle
             
             obj.thetaUpsampleFactor = obj.im.thetaUpsampleFactor;
             
-            obj.theta_rad_vec = obj.sar.theta_rad;
-            obj.k_vec = obj.fmcw.k;
+            obj.theta_rad_vec = obj.scanner.theta_rad;
+            obj.k_vec = obj.wav.k;
             obj.R0_m = obj.ant.z0_m;
+            
+            if obj.im.isApp
+                obj.thetaUpsampleFactor = obj.im.app.ThetaUpsampleFactorEditField_2.Value;
+            end
         end
         
         function verifyParameters(obj)
             % Verify the parameters allow for imaging
             
-            obj.isFail = false;
-            
             [x_m_temp,z_m_temp] = getTempXZ(obj);
             
+            if obj.im.isApp
+                app = obj.im.app;
+                app.XMinmEditField_im_5.Value = min(x_m_temp);
+                app.XMaxmEditField_im_5.Value = max(x_m_temp);
+                
+                app.ZMinmEditField_im_5.Value = min(z_m_temp);
+                app.ZMaxmEditField_im_5.Value = max(z_m_temp);
+            end
+            
             if max(abs(obj.x_m)) > max(abs(x_m_temp))
-                warning("xMax_m is too large for nFFTx. Decrease xMax_m or increase nFFTx")
+                showErrorMessage(obj.im,"xMax_m is too large for nFFTx. Decrease xMax_m or increase nFFTx","2D PFA Error")
                 obj.isFail = true;
                 return;
             end
             
-            if obj.thetaUpsampleFactor*obj.sar.numTheta > obj.nFFTx
-                warning("thetaUpsampleFactor is too large for nFFTx. Decrease thetaUpsampleFactor or increase nFFTx")
+            if obj.thetaUpsampleFactor*obj.scanner.numTheta > obj.nFFTx
+                showErrorMessage(obj.im,"thetaUpsampleFactor is too large for nFFTx. Decrease thetaUpsampleFactor or increase nFFTx","2D PFA Error")
                 obj.isFail = true;
                 return;
             end
             
             if max(obj.z_m) > max(z_m_temp)
-                warning("zMax_m is too large for nFFTz. Decrease zMax_m or increase nFFTz")
+                showErrorMessage(obj.im,"zMax_m is too large for nFFTz. Decrease zMax_m or increase nFFTz","2D PFA Error")
                 obj.isFail = true;
                 return;
             end
@@ -118,18 +129,19 @@ classdef uniform_theta_CSAR_XZ_PFA < handle
         function verifyReconstruction(obj)
             % Verify the reconstruction can continue
             
-            if obj.sar.scanMethod ~= "Circular"
-                warning("Must use 1-D θ Circular CSAR scan to use 1-D CSAR 2-D PFA image reconstruction method!");
+            if obj.scanner.method ~= "Circular"
+                showErrorMessage(obj.im,"Must use 1-D θ Circular CSAR scan to use 1-D CSAR 2-D PFA image reconstruction method!","2D PFA Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure single element array
             if obj.ant.tx.numTx ~= 1 || obj.ant.rx.numRx ~= 1
-                warning("Array must have only 1 Tx and 1 Rx. Please disable necessary elements.");
+                showErrorMessage(obj.im,"Array must have only 1 Tx and 1 Rx. Please disable necessary elements.","2D PFA Error");
                 obj.isFail = true;
                 return
             end
+            obj.isFail = false;
         end
         
         function [x_m_temp,z_m_temp] = getTempXZ(obj)

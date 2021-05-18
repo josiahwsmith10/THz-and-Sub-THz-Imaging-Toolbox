@@ -15,9 +15,9 @@
 
 function obj = mult2mono(obj)
 % Y-dimension only multistatic-to-monostatic approximation
-if numel(obj.sar.sarSize) == 3
+if numel(obj.scanner.sarSize) == 3
     k = reshape(obj.k_vec,1,1,[]);
-elseif numel(obj.sar.sarSize) == 4
+elseif numel(obj.scanner.sarSize) == 4
     k = reshape(obj.k_vec,1,1,1,[]);
 else
     warning("Could not perform multistatic-to-monostatic approximation!!")

@@ -43,11 +43,11 @@ classdef uniform_thetaY_CSAR_XYZ_PFA < handle
         xStep_m = 1e-3      % Step size along the x-dimension to move the antenna array in meters
         yStep_m = 8e-3      % Step size along the y-dimension to move the antenna array in meters
         
-        fmcw                % fmcwChirpParameters object
-        ant                 % sarAntennaArray object
-        sar                 % sarScenario object
-        target              % sarTarget object
-        im                  % sarImage object
+        wav                 % A THzWaveformParameters object handle
+        ant                 % A THzAntennaArray object handle
+        scanner             % A THzScanner object handle
+        target              % A THzTarget object handle
+        im                  % A THzImageReconstruction object handle
     end
     
     methods
@@ -56,9 +56,9 @@ classdef uniform_thetaY_CSAR_XYZ_PFA < handle
             % the imaging scenario and get the parameters from those object
             % handles
             
-            obj.fmcw = im.fmcw;
+            obj.wav = im.wav;
             obj.ant = im.ant;
-            obj.sar = im.sar;
+            obj.scanner = im.scanner;
             obj.target = im.target;
             obj.im = im;
             
@@ -70,8 +70,8 @@ classdef uniform_thetaY_CSAR_XYZ_PFA < handle
             % from the object handles and verifying the parameters
             
             getParameters(obj);
-            verifyParameters(obj);
             verifyReconstruction(obj);
+            verifyParameters(obj);
         end
         
         function getParameters(obj)
@@ -93,37 +93,51 @@ classdef uniform_thetaY_CSAR_XYZ_PFA < handle
             obj.isMult2Mono = obj.im.isMult2Mono;
             
             obj.zRef_m = obj.im.zRef_m;
-            obj.theta_rad_vec = obj.sar.theta_rad;
-            obj.k_vec = obj.fmcw.k;
+            obj.theta_rad_vec = obj.scanner.theta_rad;
+            obj.k_vec = obj.wav.k;
             obj.R0_m = obj.ant.z0_m;
-            obj.xStep_m = obj.sar.xStep_m;
-            obj.yStep_m = obj.sar.yStep_m;
+            obj.xStep_m = obj.scanner.xStep_m;
+            obj.yStep_m = obj.scanner.yStep_m;
+            
+            if obj.im.isApp
+                obj.thetaUpsampleFactor = obj.im.app.ThetaUpsampleFactorEditField.Value;
+            end
         end
         
         function verifyParameters(obj)
             % Verify the parameters allow for imaging
             
-            obj.isFail = false;
-            
             [x_m_temp,y_m_temp,z_m_temp] = getTempXYZ(obj);
             
+            if obj.im.isApp
+                app = obj.im.app;
+                app.XMinmEditField_im_4.Value = min(x_m_temp);
+                app.XMaxmEditField_im_4.Value = max(x_m_temp);
+                
+                app.YMinmEditField_im_6.Value = min(y_m_temp);
+                app.YMaxmEditField_im_6.Value = max(y_m_temp);
+                
+                app.ZMinmEditField_im_4.Value = min(z_m_temp);
+                app.ZMaxmEditField_im_4.Value = max(z_m_temp);
+            end
+            
             if max(abs(obj.x_m)) > max(abs(x_m_temp))
-                warning("xMax_m is too large for nFFTx. Decrease xMax_m or increase nFFTx")
+                showErrorMessage(obj.im,"xMax_m is too large for nFFTx. Decrease xMax_m or increase nFFTx","3D PFA Error")
                 obj.isFail = true;
                 return;
             end
-            if obj.thetaUpsampleFactor*obj.sar.numTheta > obj.nFFTx
-                warning("thetaUpsampleFactor is too large for nFFTx. Decrease thetaUpsampleFactor or increase nFFTx")
+            if obj.thetaUpsampleFactor*obj.scanner.numTheta > obj.nFFTx
+                showErrorMessage(obj.im,"thetaUpsampleFactor is too large for nFFTx. Decrease thetaUpsampleFactor or increase nFFTx","3D PFA Error")
                 obj.isFail = true;
                 return;
             end
             if max(obj.y_m) > max(y_m_temp)
-                warning("yMax_m is too large for nFFTy. Decrease yMax_m or increase nFFTy")
+                showErrorMessage(obj.im,"yMax_m is too large for nFFTy. Decrease yMax_m or increase nFFTy","3D PFA Error")
                 obj.isFail = true;
                 return;
             end
             if max(obj.z_m) > max(z_m_temp)
-                warning("zMax_m is too large for nFFTz. Decrease zMax_m or increase nFFTz")
+                showErrorMessage(obj.im,"zMax_m is too large for nFFTz. Decrease zMax_m or increase nFFTz","3D PFA Error")
                 obj.isFail = true;
                 return;
             end
@@ -132,43 +146,44 @@ classdef uniform_thetaY_CSAR_XYZ_PFA < handle
         function verifyReconstruction(obj)
             % Verify the reconstruction can continue
             
-            if obj.sar.scanMethod ~= "Cylindrical"
-                warning("Must use 2-D θY Cylindrical CSAR scan to use 2-D CSAR 3-D PFA image reconstruction method!");
+            if obj.scanner.method ~= "Cylindrical"
+                showErrorMessage(obj.im,"Must use 2-D θY Cylindrical CSAR scan to use 2-D CSAR 3-D PFA image reconstruction method!","3D PFA Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure array is colinear
-            if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*eps
-                warning("MIMO array must be colinear. Please disable necessary elements.");
+            if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*sqrt(eps)
+                showErrorMessage(obj.im,"MIMO array must be colinear. Please disable necessary elements.","3D PFA Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure virtual array is uniform
-            if mean(diff(obj.ant.vx.xyz_m(:,2),2)) > eps
-                warning("Virtual antenna array is nonuniform! Change antenna positions.");
+            if mean(diff(obj.ant.vx.xyz_m(:,2),2)) > sqrt(eps)
+                showErrorMessage(obj.im,"Virtual antenna array is nonuniform! Change antenna positions.","3D PFA Error");
                 obj.isFail = true;
                 return
             end
             
             % And sar step size is correct
-            if obj.sar.yStep_m - mean(diff(obj.ant.vx.xyz_m(:,2)))*obj.ant.vx.numVx > 8*eps
-                warning("SAR step size is incorrect!");
+            if obj.scanner.yStep_m - mean(diff(obj.ant.vx.xyz_m(:,2)))*obj.ant.vx.numVx > 8*sqrt(eps)
+                showErrorMessage(obj.im,"SAR step size is incorrect!","3D PFA Error");
                 obj.isFail = true;
                 return
             end
             
-            if ~obj.ant.isEPC && ~obj.isMult2Mono
+            if ~(isAppEPC(obj.im.app) || obj.ant.isEPC) && ~obj.isMult2Mono
                 % If using MIMO Array
                 % Ensure multistatic-to-monostatic approximation is employed
-                warning("Must use multistatic-to-monostatic approximation to use uniform method!");
+                showErrorMessage(obj.im,"Must use multistatic-to-monostatic approximation to use uniform method!","3D PFA Error");
                 obj.isFail = true;
                 return
             end
             
             % Everything is okay to continue
-            obj.yStep_m = obj.sar.yStep_m/obj.ant.vx.numVx;
+            obj.yStep_m = obj.scanner.yStep_m/obj.ant.vx.numVx;
+            obj.isFail = false;
         end
         
         function [x_m_temp,y_m_temp,z_m_temp] = getTempXYZ(obj)

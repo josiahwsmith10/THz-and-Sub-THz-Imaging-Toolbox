@@ -38,11 +38,11 @@ classdef reconstructionAlgorithmTemplate < handle
         xStep_m = 1e-3      % Step size along the x-dimension to move the antenna array in meters
         yStep_m = 8e-3      % Step size along the y-dimension to move the antenna array in meters
         
-        fmcw                % fmcwChirpParameters object
-        ant                 % sarAntennaArray object
-        sar                 % sarScenario object
-        target              % sarTarget object
-        im                  % sarImage object
+        wav                 % A THzWaveformParameters object handle
+        ant                 % A THzAntennaArray object handle
+        scanner             % A THzScanner object handle
+        target              % A THzTarget object handle
+        im                  % A THzImageReconstruction object handle
     end
     
     methods
@@ -51,9 +51,9 @@ classdef reconstructionAlgorithmTemplate < handle
             % the imaging scenario and get the parameters from those object
             % handles
             
-            obj.fmcw = obj.im.fmcw;
+            obj.wav = obj.im.wav;
             obj.ant = obj.im.ant;
-            obj.sar = obj.im.sar;
+            obj.scanner = obj.im.scanner;
             obj.target = obj.im.target;
             obj.im = im;
             
@@ -109,10 +109,10 @@ classdef reconstructionAlgorithmTemplate < handle
             obj.isGPU = obj.im.isGPU;
             obj.isAmplitudeFactor = obj.target.isAmplitudeFactor;
             
-            obj.k_vec = obj.fmcw.k;
+            obj.k_vec = obj.wav.k;
             obj.z0_m = obj.ant.z0_m;
-            obj.xStep_m = obj.sar.xStep_m;
-            obj.yStep_m = obj.sar.yStep_m;
+            obj.xStep_m = obj.scanner.xStep_m;
+            obj.yStep_m = obj.scanner.yStep_m;
         end
         
         function imXYZ_out = computeReconstruction(obj)

@@ -1,0 +1,392 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>ImageReconstructionDemo</title><meta name="generator" content="MATLAB 9.10"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2021-05-18"><meta name="DC.source" content="ImageReconstructionDemo.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; }
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+span.typesection { color:#A0522D }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">Include Necessary Directories</a></li><li><a href="#3">Create the Objects</a></li><li><a href="#4">Set Waveform Parameters</a></li><li><a href="#5">Compute the Waveform Parameters</a></li><li><a href="#6">Set Antenna Array Properties</a></li><li><a href="#7">Set Scanner Parameters</a></li><li><a href="#8">Set Target Parameters</a></li><li><a href="#9">Compute the Beat Signal</a></li><li><a href="#10">Set Image Reconstruction Parameters and Create sarImage Object</a></li><li><a href="#11">Reconstruct the Image</a></li><li><a href="#12">Display the Image with Different Parameters</a></li></ul></div><pre class="codeinput"><span class="comment">% AntennaArray_demo - A short demonstration of the THzAntennaArray class</span>
+<span class="comment">% Copyright (C) 2021 Josiah W. Smith</span>
+<span class="comment">%</span>
+<span class="comment">% This program is free software: you can redistribute it and/or modify</span>
+<span class="comment">% it under the terms of the GNU General Public License as published by</span>
+<span class="comment">% the Free Software Foundation, either version 3 of the License, or</span>
+<span class="comment">% (at your option) any later version.</span>
+<span class="comment">%</span>
+<span class="comment">% This program is distributed in the hope that it will be useful,</span>
+<span class="comment">% but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="comment">% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="comment">% GNU General Public License for more details.</span>
+</pre><h2 id="2">Include Necessary Directories</h2><pre class="codeinput">addpath(genpath(<span class="string">"../"</span>))
+</pre><h2 id="3">Create the Objects</h2><pre class="codeinput">wav = THzWaveformParameters();
+
+ant = THzAntennaArray(wav);
+
+scanner = THzScanner(ant);
+
+target = THzTarget(wav,ant,scanner);
+
+im = THzImageReconstruction(wav,ant,scanner,target);
+
+doc <span class="string">THzImageReconstruction</span>
+</pre><h2 id="4">Set Waveform Parameters</h2><pre class="codeinput">wav.Nk = 50;
+wav.f0 = 300*1e9;
+wav.fS = 1000*1e3;
+wav.fC = 305*1e9;
+wav.B = 10e9;
+</pre><h2 id="5">Compute the Waveform Parameters</h2><p>Computes the wavenumber vector etc.</p><pre class="codeinput">wav.Compute();
+</pre><h2 id="6">Set Antenna Array Properties</h2><pre class="codeinput">ant.isEPC = false;
+ant.z0_m = 0;
+<span class="comment">% Large MIMO Array</span>
+ant.tableTx = [
+    0   0   4   0   1
+    0   0   8   0   1];
+ant.tableRx = [
+    0   0   0   0   1
+    0   0   0.5 0   1
+    0   0   1   0   1
+    0   0   1.5 0   1
+    0   0   2   0   1
+    0   0   2.5 0   1
+    0   0   3   0   1
+    0   0   3.5 0   1];
+ant.Compute();
+
+<span class="comment">% Display the Antenna Array</span>
+ant.Display();
+</pre><img vspace="5" hspace="5" src="ImageReconstructionDemo_01.png" alt=""> <h2 id="7">Set Scanner Parameters</h2><pre class="codeinput">scanner.method = <span class="string">"Rectilinear"</span>;
+scanner.xStep_m = wav.lambda_m/4;
+scanner.numX = 256;
+scanner.yStep_m = wav.lambda_m*4;
+scanner.numY = 16;
+
+scanner.Compute();
+
+<span class="comment">% Display the Synthetic Array</span>
+scanner.Display();
+</pre><img vspace="5" hspace="5" src="ImageReconstructionDemo_02.png" alt=""> <h2 id="8">Set Target Parameters</h2><pre class="codeinput">target.isAmplitudeFactor = false;
+
+target.tableTarget = [
+    0   0   0.1 1];
+
+target.png.fileName = <span class="string">'circle.png'</span>;
+target.png.xStep_m = 1e-3;
+target.png.yStep_m = 1e-3;
+target.png.xOffset_m = -0.025;
+target.png.yOffset_m = 0.05;
+target.png.zOffset_m = 0.25;
+target.png.reflectivity = 1;
+target.png.downsampleFactor = 4;
+
+target.stl.fileName = <span class="string">'ar15.stl'</span>;
+target.stl.zCrop_m = 0.25;
+target.stl.xOffset_m = 0;
+target.stl.yOffset_m = 0;
+target.stl.zOffset_m = 0.25;
+target.stl.reflectivity = 1;
+target.stl.downsampleFactor = 40;
+
+target.rp.numTargets = 16;
+target.rp.xMin_m = -0.03;
+target.rp.xMax_m = 0.03;
+target.rp.yMin_m = -0.03;
+target.rp.yMax_m = 0.03;
+target.rp.zMin_m = 0.02;
+target.rp.zMax_m = 0.18;
+target.rp.ampMin = 0.5;
+target.rp.ampMax = 1;
+
+<span class="comment">% Which to use</span>
+target.isTable = true;
+target.isPNG = false;
+target.isSTL = false;
+target.isRandomPoints = false;
+
+target.Get();
+
+<span class="comment">% Display the target</span>
+target.Display();
+</pre><pre class="codeoutput">
+ans = 
+
+  THzTarget with properties:
+
+                isGPU: 1
+               isLong: 0
+           numTargets: 1
+                xyz_m: [0 0 0.1000]
+                  amp: 1
+                    R: []
+    isAmplitudeFactor: 0
+              isTable: 1
+                isPNG: 0
+                isSTL: 0
+       isRandomPoints: 0
+        isGPUVerified: 1
+          tableTarget: [0 0 0.1000 1]
+                  png: [1&times;1 struct]
+                  stl: [1&times;1 struct]
+                   rp: [1&times;1 struct]
+              sarData: []
+                  fig: [1&times;1 struct]
+                  wav: [1&times;1 THzWaveformParameters]
+                  ant: [1&times;1 THzAntennaArray]
+              scanner: [1&times;1 THzScanner]
+                  app: [1&times;1 struct]
+                isApp: 0
+             isSilent: 0
+
+</pre><img vspace="5" hspace="5" src="ImageReconstructionDemo_03.png" alt=""> <h2 id="9">Compute the Beat Signal</h2><pre class="codeinput">target.isGPU = true;
+target.Compute();
+</pre><h2 id="10">Set Image Reconstruction Parameters and Create sarImage Object</h2><p>When the parameters of a sarImage object are changed by the user, the object automatically updates itself</p><pre class="codeinput">im.nFFTx = 512;
+im.nFFTy = 512;
+im.nFFTz = 512;
+
+im.xMin_m = -0.05;
+im.xMax_m = 0.05;
+
+im.yMin_m = -0.05;
+im.yMax_m = 0.05;
+
+im.zMin_m = 0;
+im.zMax_m = 0.2;
+
+im.numX = 128;
+im.numY = 128;
+im.numZ = 128;
+
+im.isGPU = false;
+<span class="comment">% im.zSlice_m = 0.1; % Use if reconstructing a 2-D image</span>
+im.method = <span class="string">"Uniform 2-D SAR 3-D RMA"</span>;
+
+im.isMult2Mono = true;
+im.zRef_m = 0.1;
+</pre><h2 id="11">Reconstruct the Image</h2><pre class="codeinput">im.Compute();
+im.Display();
+</pre><pre class="codeoutput">Attempting image reconstruction using Uniform 2-D SAR 3-D RMA method.
+Successfully image reconstruction using Uniform 2-D SAR 3-D RMA method.
+</pre><img vspace="5" hspace="5" src="ImageReconstructionDemo_04.png" alt=""> <h2 id="12">Display the Image with Different Parameters</h2><pre class="codeinput">im.dBMin = -30;
+im.fontSize = 12;
+im.Display();
+</pre><img vspace="5" hspace="5" src="ImageReconstructionDemo_05.png" alt=""> <p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2021a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% AntennaArray_demo - A short demonstration of the THzAntennaArray class
+% Copyright (C) 2021 Josiah W. Smith
+%
+% This program is free software: you can redistribute it and/or modify
+% it under the terms of the GNU General Public License as published by
+% the Free Software Foundation, either version 3 of the License, or
+% (at your option) any later version.
+%
+% This program is distributed in the hope that it will be useful,
+% but WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+% GNU General Public License for more details.
+
+%% Include Necessary Directories
+addpath(genpath("../"))
+
+%% Create the Objects
+wav = THzWaveformParameters();
+
+ant = THzAntennaArray(wav);
+
+scanner = THzScanner(ant);
+
+target = THzTarget(wav,ant,scanner);
+
+im = THzImageReconstruction(wav,ant,scanner,target);
+
+doc THzImageReconstruction
+
+%% Set Waveform Parameters
+wav.Nk = 50;
+wav.f0 = 300*1e9;
+wav.fS = 1000*1e3;
+wav.fC = 305*1e9;
+wav.B = 10e9;
+
+%% Compute the Waveform Parameters
+% Computes the wavenumber vector etc.
+wav.Compute();
+
+%% Set Antenna Array Properties
+ant.isEPC = false;
+ant.z0_m = 0;
+% Large MIMO Array
+ant.tableTx = [
+    0   0   4   0   1
+    0   0   8   0   1];
+ant.tableRx = [
+    0   0   0   0   1
+    0   0   0.5 0   1
+    0   0   1   0   1
+    0   0   1.5 0   1
+    0   0   2   0   1
+    0   0   2.5 0   1
+    0   0   3   0   1
+    0   0   3.5 0   1];
+ant.Compute();
+
+% Display the Antenna Array
+ant.Display();
+
+%% Set Scanner Parameters
+scanner.method = "Rectilinear";
+scanner.xStep_m = wav.lambda_m/4;
+scanner.numX = 256;
+scanner.yStep_m = wav.lambda_m*4;
+scanner.numY = 16;
+
+scanner.Compute();
+
+% Display the Synthetic Array
+scanner.Display();
+
+%% Set Target Parameters
+target.isAmplitudeFactor = false;
+
+target.tableTarget = [
+    0   0   0.1 1];
+
+target.png.fileName = 'circle.png';
+target.png.xStep_m = 1e-3;
+target.png.yStep_m = 1e-3;
+target.png.xOffset_m = -0.025;
+target.png.yOffset_m = 0.05;
+target.png.zOffset_m = 0.25;
+target.png.reflectivity = 1;
+target.png.downsampleFactor = 4;
+
+target.stl.fileName = 'ar15.stl';
+target.stl.zCrop_m = 0.25;
+target.stl.xOffset_m = 0;
+target.stl.yOffset_m = 0;
+target.stl.zOffset_m = 0.25;
+target.stl.reflectivity = 1;
+target.stl.downsampleFactor = 40;
+
+target.rp.numTargets = 16;
+target.rp.xMin_m = -0.03;
+target.rp.xMax_m = 0.03;
+target.rp.yMin_m = -0.03;
+target.rp.yMax_m = 0.03;
+target.rp.zMin_m = 0.02;
+target.rp.zMax_m = 0.18;
+target.rp.ampMin = 0.5;
+target.rp.ampMax = 1;
+
+% Which to use
+target.isTable = true;
+target.isPNG = false;
+target.isSTL = false;
+target.isRandomPoints = false;
+
+target.Get();
+
+% Display the target
+target.Display();
+
+%% Compute the Beat Signal
+target.isGPU = true;
+target.Compute();
+
+%% Set Image Reconstruction Parameters and Create sarImage Object
+% When the parameters of a sarImage object are changed by the user, the
+% object automatically updates itself
+im.nFFTx = 512;
+im.nFFTy = 512;
+im.nFFTz = 512;
+
+im.xMin_m = -0.05;
+im.xMax_m = 0.05;
+
+im.yMin_m = -0.05;
+im.yMax_m = 0.05;
+
+im.zMin_m = 0;
+im.zMax_m = 0.2;
+
+im.numX = 128;
+im.numY = 128;
+im.numZ = 128;
+
+im.isGPU = false;
+% im.zSlice_m = 0.1; % Use if reconstructing a 2-D image
+im.method = "Uniform 2-D SAR 3-D RMA";
+
+im.isMult2Mono = true;
+im.zRef_m = 0.1;
+
+%% Reconstruct the Image
+im.Compute();
+im.Display();
+
+%% Display the Image with Different Parameters
+im.dBMin = -30;
+im.fontSize = 12;
+im.Display();
+##### SOURCE END #####
+--></body></html>

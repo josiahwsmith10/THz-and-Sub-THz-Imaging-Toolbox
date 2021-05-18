@@ -1,1 +1,400 @@
-<html>   <head>      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">         <link rel="stylesheet" href="helpwin2.css"><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/shared/scripts/helpservices.js"></script><title>uniform_thetaY_CSAR_XYZ_PFA - MATLAB File Help</title>   </head>   <body>      <!--Single-page help-->      <table border="0" cellspacing="0" width="100%">         <tr class="subheader">            <td class="headertitle">uniform_thetaY_CSAR_XYZ_PFA - MATLAB File Help</td>            <td class="subheader-right"><a href="matlab:edit uniform_thetaY_CSAR_XYZ_PFA">View code for uniform_thetaY_CSAR_XYZ_PFA</a></td>         </tr>      </table>      <div class="title">uniform_thetaY_CSAR_XYZ_PFA</div>      <div class="helptext"><pre><!--helptext -->  uniform thetaY_CSAR_XYZ_PFA is a reconstructor class that performs  3-D Polar Formatting Algorithm image reconstruction. The synthetic  aperture must span across the y and theta dimensions, forming a  cylindrical aperture, and the target can be a 1-D, 2-D, or 3-D target  in x-y-z space   Copyright (C) 2021 Josiah W. Smith   This program is free software: you can redistribute it and/or modify  it under the terms of the GNU General Public License as published by  the Free Software Foundation, either version 3 of the License, or  (at your option) any later version.   This program is distributed in the hope that it will be useful,  but WITHOUT ANY WARRANTY; without even the implied warranty of  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the  GNU General Public License for more details.</pre></div><!--after help -->      <!--Class-->      <div class="sectiontitle">Class Details</div>      <table class="class-details">         <tr>            <td class="class-detail-label">Superclasses</td>            <td><a href="matlab:doc('handle')">handle</a></td>         </tr>         <tr>            <td class="class-detail-label">Sealed</td>            <td>false</td>         </tr>         <tr>            <td class="class-detail-label">Construct on load</td>            <td>false</td>         </tr>      </table>      <!--Constructors-->      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary      </div>      <table class="summary-list">         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.uniform_thetaY_CSAR_XYZ_PFA')">uniform_thetaY_CSAR_XYZ_PFA</a></td>            <td class="m-help">Set the properties corresponding to the object handles for&nbsp;</td>         </tr>      </table>      <!--Properties-->      <div class="sectiontitle"><a name="properties"></a>Property Summary      </div>      <table class="summary-list">         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.R0_m')">R0_m</a></td>            <td class="m-help">Radius of scan&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ant')">ant</a></td>            <td class="m-help">sarAntennaArray object&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.fmcw')">fmcw</a></td>            <td class="m-help">fmcwChirpParameters object&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.im')">im</a></td>            <td class="m-help">sarImage object&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.imXYZ')">imXYZ</a></td>            <td class="m-help">Reconstructed image&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isAmplitudeFactor')">isAmplitudeFactor</a></td>            <td class="m-help">Boolean whether or not to include the amplitude factor in the image reconstruction process&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isFail')">isFail</a></td>            <td class="m-help">Boolean whether or not the reconstruction has failed&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isGPU')">isGPU</a></td>            <td class="m-help">Boolean whether or not to use the GPU for image reconstruction&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isMult2Mono')">isMult2Mono</a></td>            <td class="m-help">Boolean whether or not to use the multistatic-to-monostatic approximation&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.k_vec')">k_vec</a></td>            <td class="m-help">Instantaneous wavenumber vector&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.nFFTx')">nFFTx</a></td>            <td class="m-help">Number of FFT points along the x-dimension, when using FFT-based reconstruction algorithms&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.nFFTy')">nFFTy</a></td>            <td class="m-help">Number of FFT points along the y-dimension, when using FFT-based reconstruction algorithms&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.nFFTz')">nFFTz</a></td>            <td class="m-help">Number of FFT points along the z-dimension, when using FFT-based reconstruction algorithms&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.sar')">sar</a></td>            <td class="m-help">sarScenario object&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.sarData')">sarData</a></td>            <td class="m-help">Computed beat signal&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.target')">target</a></td>            <td class="m-help">sarTarget object&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.thetaUpsampleFactor')">thetaUpsampleFactor</a></td>            <td class="m-help">Upsample factor on the theta dimension of the SAR data operated in circular or cylindrical mode&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.theta_rad_vec')">theta_rad_vec</a></td>            <td class="m-help">Angular scan locations vector&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.xStep_m')">xStep_m</a></td>            <td class="m-help">Step size along the x-dimension to move the antenna array in meters&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.x_m')">x_m</a></td>            <td class="m-help">Reconstructed image x axis&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.yStep_m')">yStep_m</a></td>            <td class="m-help">Step size along the y-dimension to move the antenna array in meters&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.y_m')">y_m</a></td>            <td class="m-help">Reconstructed image y axis&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.zRef_m')">zRef_m</a></td>            <td class="m-help">z location of reference plane for multistatic-to-monostatic approximation&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.z_m')">z_m</a></td>            <td class="m-help">Reconstructed image z axis&nbsp;</td>         </tr>      </table>      <!--Methods-->      <div class="sectiontitle"><a name="methods"></a>Method Summary      </div>      <table class="summary-list">         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.addlistener')">addlistener</a></td>            <td class="m-help">Add listener for event.               Help for uniform_thetaY_CSAR_XYZ_PFA/addlistener is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.computeReconstruction')">computeReconstruction</a></td>            <td class="m-help">Update the reconstruction algorithm and attempt the&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.delete')">delete</a></td>            <td class="m-help">Delete a handle object.               Help for uniform_thetaY_CSAR_XYZ_PFA/delete is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.displayImage')">displayImage</a></td>            <td class="m-help">Display the reconstructed x-y-z image&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.eq')">eq</a></td>            <td class="m-help">== (EQ)   Test handle equality.               Help for uniform_thetaY_CSAR_XYZ_PFA/eq is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.findobj')">findobj</a></td>            <td class="m-help">Find objects matching specified conditions.               Help for uniform_thetaY_CSAR_XYZ_PFA/findobj is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.findprop')">findprop</a></td>            <td class="m-help">Find property of MATLAB handle object.               Help for uniform_thetaY_CSAR_XYZ_PFA/findprop is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ge')">ge</a></td>            <td class="m-help">&gt;= (GE)   Greater than or equal relation for handles.               Help for uniform_thetaY_CSAR_XYZ_PFA/ge is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.getParameters')">getParameters</a></td>            <td class="m-help">Get the parameters from the object handles&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.getTempXYZ')">getTempXYZ</a></td>            <td class="m-help">Compute the axes of the recovered image for parameter&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.gt')">gt</a></td>            <td class="m-help">&gt; (GT)   Greater than relation for handles.               Help for uniform_thetaY_CSAR_XYZ_PFA/gt is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">Sealed                &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isvalid')">isvalid</a></td>            <td class="m-help">Test handle validity.               Help for uniform_thetaY_CSAR_XYZ_PFA/isvalid is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.le')">le</a></td>            <td class="m-help">&lt;= (LE)   Less than or equal relation for handles.               Help for uniform_thetaY_CSAR_XYZ_PFA/le is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.listener')">listener</a></td>            <td class="m-help">Add listener for event without binding the listener to the source object.               Help for uniform_thetaY_CSAR_XYZ_PFA/listener is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.lt')">lt</a></td>            <td class="m-help">&lt; (LT)   Less than relation for handles.               Help for uniform_thetaY_CSAR_XYZ_PFA/lt is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.make_kX')">make_kX</a></td>            <td class="m-help">Make a spatial wavenumber vector from the step size of the&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.make_x')">make_x</a></td>            <td class="m-help">Make an imaging axis from the step size and number of FFT&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ne')">ne</a></td>            <td class="m-help">~= (NE)   Not equal relation for handles.               Help for uniform_thetaY_CSAR_XYZ_PFA/ne is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.notify')">notify</a></td>            <td class="m-help">Notify listeners of event.               Help for uniform_thetaY_CSAR_XYZ_PFA/notify is inherited from superclass HANDLE               &nbsp;            </td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.reconstruct')">reconstruct</a></td>            <td class="m-help">the image using the 3-D Polar Formatting&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.update')">update</a></td>            <td class="m-help">the reconstruction algorithm by getting the parameters&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.verifyParameters')">verifyParameters</a></td>            <td class="m-help">Verify the parameters allow for imaging&nbsp;</td>         </tr>         <tr class="summary-item">            <td class="attributes">               &nbsp;                           </td>            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.verifyReconstruction')">verifyReconstruction</a></td>            <td class="m-help">Verify the reconstruction can continue&nbsp;</td>         </tr>      </table>      <!--Events-->      <div class="sectiontitle"><a name="events"></a>Event Summary      </div>      <table class="summary-list">         <tr class="summary-item">            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>            <td class="m-help">Notifies listeners that a particular object has been destroyed.               Help for uniform_thetaY_CSAR_XYZ_PFA/ObjectBeingDestroyed is inherited from superclass HANDLE               &nbsp;            </td>         </tr>      </table>   </body></html>
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="helpwin2.css"><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/shared/scripts/helpservices.js"></script><title>uniform_thetaY_CSAR_XYZ_PFA - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">uniform_thetaY_CSAR_XYZ_PFA - MATLAB File Help</td>
+            <td class="subheader-right"><a href="matlab:edit uniform_thetaY_CSAR_XYZ_PFA">View code for uniform_thetaY_CSAR_XYZ_PFA</a></td>
+         </tr>
+      </table>
+      <div class="title">uniform_thetaY_CSAR_XYZ_PFA</div>
+      <div class="helptext"><pre><!--helptext -->  uniform thetaY_CSAR_XYZ_PFA is a reconstructor class that performs
+  3-D Polar Formatting Algorithm image reconstruction. The synthetic
+  aperture must span across the y and theta dimensions, forming a
+  cylindrical aperture, and the target can be a 1-D, 2-D, or 3-D target
+  in x-y-z space
+ 
+  Copyright (C) 2021 Josiah W. Smith
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:doc('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.uniform_thetaY_CSAR_XYZ_PFA')">uniform_thetaY_CSAR_XYZ_PFA</a></td>
+            <td class="m-help">Set the properties corresponding to the object handles for&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.R0_m')">R0_m</a></td>
+            <td class="m-help">Radius of scan&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ant')">ant</a></td>
+            <td class="m-help">A THzAntennaArray object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.im')">im</a></td>
+            <td class="m-help">A THzImageReconstruction object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.imXYZ')">imXYZ</a></td>
+            <td class="m-help">Reconstructed image&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isAmplitudeFactor')">isAmplitudeFactor</a></td>
+            <td class="m-help">Boolean whether or not to include the amplitude factor in the image reconstruction process&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isFail')">isFail</a></td>
+            <td class="m-help">Boolean whether or not the reconstruction has failed&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isGPU')">isGPU</a></td>
+            <td class="m-help">Boolean whether or not to use the GPU for image reconstruction&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isMult2Mono')">isMult2Mono</a></td>
+            <td class="m-help">Boolean whether or not to use the multistatic-to-monostatic approximation&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.k_vec')">k_vec</a></td>
+            <td class="m-help">Instantaneous wavenumber vector&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.nFFTx')">nFFTx</a></td>
+            <td class="m-help">Number of FFT points along the x-dimension, when using FFT-based reconstruction algorithms&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.nFFTy')">nFFTy</a></td>
+            <td class="m-help">Number of FFT points along the y-dimension, when using FFT-based reconstruction algorithms&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.nFFTz')">nFFTz</a></td>
+            <td class="m-help">Number of FFT points along the z-dimension, when using FFT-based reconstruction algorithms&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.sarData')">sarData</a></td>
+            <td class="m-help">Computed beat signal&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.scanner')">scanner</a></td>
+            <td class="m-help">A THzScanner object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.target')">target</a></td>
+            <td class="m-help">A THzTarget object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.thetaUpsampleFactor')">thetaUpsampleFactor</a></td>
+            <td class="m-help">Upsample factor on the theta dimension of the SAR data operated in circular or cylindrical mode&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.theta_rad_vec')">theta_rad_vec</a></td>
+            <td class="m-help">Angular scan locations vector&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.wav')">wav</a></td>
+            <td class="m-help">A THzWaveformParameters object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.xStep_m')">xStep_m</a></td>
+            <td class="m-help">Step size along the x-dimension to move the antenna array in meters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.x_m')">x_m</a></td>
+            <td class="m-help">Reconstructed image x axis&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.yStep_m')">yStep_m</a></td>
+            <td class="m-help">Step size along the y-dimension to move the antenna array in meters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.y_m')">y_m</a></td>
+            <td class="m-help">Reconstructed image y axis&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.zRef_m')">zRef_m</a></td>
+            <td class="m-help">z location of reference plane for multistatic-to-monostatic approximation&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.z_m')">z_m</a></td>
+            <td class="m-help">Reconstructed image z axis&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/addlistener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.computeReconstruction')">computeReconstruction</a></td>
+            <td class="m-help">Update the reconstruction algorithm and attempt the&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/delete is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.displayImage')">displayImage</a></td>
+            <td class="m-help">Display the reconstructed x-y-z image&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/eq is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/findobj is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/findprop is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ge')">ge</a></td>
+            <td class="m-help">&gt;= (GE)   Greater than or equal relation for handles.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/ge is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.getParameters')">getParameters</a></td>
+            <td class="m-help">Get the parameters from the object handles&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.getTempXYZ')">getTempXYZ</a></td>
+            <td class="m-help">Compute the axes of the recovered image for parameter&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.gt')">gt</a></td>
+            <td class="m-help">&gt; (GT)   Greater than relation for handles.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/gt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/isvalid is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.le')">le</a></td>
+            <td class="m-help">&lt;= (LE)   Less than or equal relation for handles.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/le is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/listener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.lt')">lt</a></td>
+            <td class="m-help">&lt; (LT)   Less than relation for handles.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/lt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.make_kX')">make_kX</a></td>
+            <td class="m-help">Make a spatial wavenumber vector from the step size of the&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.make_x')">make_x</a></td>
+            <td class="m-help">Make an imaging axis from the step size and number of FFT&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/ne is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/notify is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.reconstruct')">reconstruct</a></td>
+            <td class="m-help">the image using the 3-D Polar Formatting&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.update')">update</a></td>
+            <td class="m-help">the reconstruction algorithm by getting the parameters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.verifyParameters')">verifyParameters</a></td>
+            <td class="m-help">Verify the parameters allow for imaging&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.verifyReconstruction')">verifyReconstruction</a></td>
+            <td class="m-help">Verify the reconstruction can continue&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('uniform_thetaY_CSAR_XYZ_PFA.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.
+               Help for uniform_thetaY_CSAR_XYZ_PFA/ObjectBeingDestroyed is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>

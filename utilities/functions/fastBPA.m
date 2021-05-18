@@ -15,10 +15,22 @@
 % GNU General Public License for more details.
 
 function fastBPA(obj,k)
+
+if obj.im.isApp
+    d = uiprogressdlg(obj.im.app.UIFigure,'Title','Performing BPA',...
+        'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+end
+
 obj.imXYZ = single(zeros(1,size(obj.target_xyz_m,1)));
 tocs = single(zeros(1,length(k)));
 for indK = 1:length(k)
     tic
+    
+    if obj.im.isApp && d.CancelRequested
+        showErrorMessage(obj.im,"Image not computed!","User Canceled BPA")
+        obj.isFail = true;
+        return;
+    end
     
     if ~obj.ant.isEPC
         Rt = pdist2(obj.tx_xyz_m,obj.target_xyz_m);
@@ -41,8 +53,16 @@ for indK = 1:length(k)
     end
     obj.imXYZ = obj.imXYZ + sum(obj.sarData(:,:,indK) .* bpaKernel,1);
     % Update the progress dialog
-    tocs(indK) = toc;
-    disp("Iteration " + indK + "/" + length(k) + ". Estimated Time Remaining: " + getEstTime(obj,tocs,indK,length(k)));
+    
+    if ~obj.im.isSilent
+        tocs(indK) = toc;
+        if obj.im.isApp
+            d.Value = indK/length(k);
+            d.Message = "Iteration " + indK + "/" + length(k) + ". Estimated Time Remaining: " + getEstTime(obj,tocs,indK,length(k));
+        else
+            disp("Iteration " + indK + "/" + length(k) + ". Estimated Time Remaining: " + getEstTime(obj,tocs,indK,length(k)));
+        end
+    end
 end
 end
 

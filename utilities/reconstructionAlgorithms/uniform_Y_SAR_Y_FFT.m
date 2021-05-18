@@ -37,11 +37,11 @@ classdef uniform_Y_SAR_Y_FFT < handle
         z0_m                % Location of the antenna array in the z-plane
         yStep_m = 8e-3      % Step size along the y-dimension to move the antenna array in meters
         
-        fmcw                % fmcwChirpParameters object
-        ant                 % sarAntennaArray object
-        sar                 % sarScenario object
-        target              % sarTarget object
-        im                  % sarImage object
+        wav                 % A THzWaveformParameters object handle
+        ant                 % A THzAntennaArray object handle
+        scanner             % A THzScanner object handle
+        target              % A THzTarget object handle
+        im                  % A THzImageReconstruction object handle
     end
     
     methods
@@ -50,9 +50,9 @@ classdef uniform_Y_SAR_Y_FFT < handle
             % the imaging scenario and get the parameters from those object
             % handles
             
-            obj.fmcw = im.fmcw;
+            obj.wav = im.wav;
             obj.ant = im.ant;
-            obj.sar = im.sar;
+            obj.scanner = im.scanner;
             obj.target = im.target;
             obj.im = im;
             
@@ -64,8 +64,8 @@ classdef uniform_Y_SAR_Y_FFT < handle
             % from the object handles and verifying the parameters
             
             getParameters(obj);
-            verifyParameters(obj);
             verifyReconstruction(obj);
+            verifyParameters(obj);
         end
         
         function getParameters(obj)
@@ -83,20 +83,28 @@ classdef uniform_Y_SAR_Y_FFT < handle
             
             obj.zSlice_m = obj.im.zSlice_m;
             obj.zRef_m = obj.im.zRef_m;
-            obj.k_vec = obj.fmcw.k;
+            obj.k_vec = obj.wav.k;
             obj.z0_m = obj.ant.z0_m;
-            obj.yStep_m = obj.sar.yStep_m;
+            obj.yStep_m = obj.scanner.yStep_m;
+            
+            if obj.im.isApp
+                obj.im.zSlice_m = obj.im.app.ZSliceEditField_3.Value;
+            end
         end
         
         function verifyParameters(obj)
             % Verify the parameters allow for imaging
             
-            obj.isFail = false;
+            y_m_temp = double(make_x(obj,obj.yStep_m,obj.nFFTy));
             
-            y_m_temp = make_x(obj,obj.sar.yStep_m,obj.nFFTy);
+            if obj.im.isApp
+                app = obj.im.app;
+                app.YMinmEditField_im_4.Value = min(y_m_temp);
+                app.YMaxmEditField_im_4.Value = max(y_m_temp);
+            end
             
             if max(abs(obj.y_m)) > max(abs(y_m_temp))
-                warning("yMax_m is too large for nFFTy. Decrease yMax_m or increase nFFTy")
+                showErrorMessage(obj.im,"yMax_m is too large for nFFTy. Decrease yMax_m or increase nFFTy","1D FFT Error")
                 obj.isFail = true;
                 return;
             end
@@ -105,29 +113,29 @@ classdef uniform_Y_SAR_Y_FFT < handle
         function verifyReconstruction(obj)
             % Verify the reconstruction can continue
             
-            if obj.sar.scanMethod ~= "Linear"
-                warning("Must use linear SAR scan along the Y-axis to perform Uniform 1-D SAR 2-D RMA image reconstruction method!");
+            if obj.scanner.method ~= "Linear"
+                showErrorMessage(obj.im,"Must use linear SAR scan along the Y-axis to perform Uniform 1-D SAR 1-D FFT image reconstruction method!","1D FFT Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure array is colinear
-            if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*eps
-                warning("MIMO array must be colinear. Please disable necessary elements.");
+            if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*sqrt(eps)
+                showErrorMessage(obj.im,"MIMO array must be colinear. Please disable necessary elements.","1D FFT Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure virtual array is uniform
-            if mean(diff(obj.ant.vx.xyz_m(:,2),2)) > eps
-                warning("Virtual antenna array is nonuniform! Change antenna positions.");
+            if mean(diff(obj.ant.vx.xyz_m(:,2),2)) > sqrt(eps)
+                showErrorMessage(obj.im,"Virtual antenna array is nonuniform! Change antenna positions.","1D FFT Error");
                 obj.isFail = true;
                 return
             end
             
             % And sar step size is correct
-            if obj.sar.yStep_m - mean(diff(obj.ant.vx.xyz_m(:,2)))*obj.ant.vx.numVx > 8*eps
-                warning("SAR step size is incorrect!");
+            if obj.scanner.yStep_m - mean(diff(obj.ant.vx.xyz_m(:,2)))*obj.ant.vx.numVx > 8*sqrt(eps)
+                showErrorMessage(obj.im,"SAR step size is incorrect!","1D FFT Error");
                 obj.isFail = true;
                 return
             end
@@ -135,13 +143,14 @@ classdef uniform_Y_SAR_Y_FFT < handle
             if ~obj.ant.isEPC && ~obj.isMult2Mono
                 % If using MIMO Array
                 % Ensure multistatic-to-monostatic approximation is employed
-                warning("Must use multistatic-to-monostatic approximation to use uniform method!");
+                showErrorMessage(obj.im,"Must use multistatic-to-monostatic approximation to use uniform method!","1D FFT Error");
                 obj.isFail = true;
                 return
             end
             
             % Everything is okay to continue
-            obj.yStep_m = obj.sar.yStep_m/obj.ant.vx.numVx;
+            obj.yStep_m = obj.scanner.yStep_m/obj.ant.vx.numVx;
+            obj.isFail = false;
         end
         
         function imXYZ_out = computeReconstruction(obj)

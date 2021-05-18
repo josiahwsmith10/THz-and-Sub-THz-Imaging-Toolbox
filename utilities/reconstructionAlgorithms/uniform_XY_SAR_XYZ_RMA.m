@@ -40,11 +40,11 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
         xStep_m = 1e-3      % Step size along the x-dimension to move the antenna array in meters
         yStep_m = 8e-3      % Step size along the y-dimension to move the antenna array in meters
         
-        fmcw                % fmcwChirpParameters object
-        ant                 % sarAntennaArray object
-        sar                 % sarScenario object
-        target              % sarTarget object
-        im                  % sarImage object
+        wav                 % A THzWaveformParameters object handle
+        ant                 % A THzAntennaArray object handle
+        scanner             % A THzScanner object handle
+        target              % A THzTarget object handle
+        im                  % A THzImageReconstruction object handle
     end
     
     methods
@@ -53,9 +53,9 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
             % the imaging scenario and get the parameters from those object
             % handles
             
-            obj.fmcw = im.fmcw;
+            obj.wav = im.wav;
             obj.ant = im.ant;
-            obj.sar = im.sar;
+            obj.scanner = im.scanner;
             obj.target = im.target;
             obj.im = im;
             
@@ -67,8 +67,8 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
             % from the object handles and verifying the parameters
             
             getParameters(obj);
-            verifyParameters(obj);
             verifyReconstruction(obj);
+            verifyParameters(obj);
         end
         
         function getParameters(obj)
@@ -89,35 +89,45 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
             obj.isMult2Mono = obj.im.isMult2Mono;
             
             obj.zRef_m = obj.im.zRef_m;
-            obj.k_vec = obj.fmcw.k;
+            obj.k_vec = obj.wav.k;
             obj.z0_m = obj.ant.z0_m;
-            obj.xStep_m = obj.sar.xStep_m;
-            obj.yStep_m = obj.sar.yStep_m;
+            obj.xStep_m = obj.scanner.xStep_m;
+            obj.yStep_m = obj.scanner.yStep_m;
         end
         
         function verifyParameters(obj)
             % Verify the parameters allow for imaging
             
-            obj.isFail = false;
-            
             kZU = single(reshape(linspace(0,2*max(obj.k_vec) - 2*max(obj.k_vec)/obj.nFFTz,obj.nFFTz),1,1,[]));
             dkZU = kZU(2) - kZU(1);
-            x_m_temp = make_x(obj,obj.sar.xStep_m,obj.nFFTx);
-            y_m_temp = make_x(obj,obj.sar.yStep_m,obj.nFFTy);
-            z_m_temp = single(2*pi / (dkZU * obj.nFFTz) * (1:obj.nFFTz));
+            x_m_temp = double(make_x(obj,obj.xStep_m,obj.nFFTx));
+            y_m_temp = double(make_x(obj,obj.yStep_m,obj.nFFTy));
+            z_m_temp = double(2*pi / (dkZU * obj.nFFTz) * (0:obj.nFFTz-1));
+            
+            if obj.im.isApp
+                app = obj.im.app;
+                app.XMinmEditField_im_2.Value = min(x_m_temp);
+                app.XMaxmEditField_im_2.Value = max(x_m_temp);
+                
+                app.YMinmEditField_im_2.Value = min(y_m_temp);
+                app.YMaxmEditField_im_2.Value = max(y_m_temp);
+                
+                app.ZMinmEditField_im_2.Value = min(z_m_temp);
+                app.ZMaxmEditField_im_2.Value = max(z_m_temp);
+            end
             
             if max(abs(obj.x_m)) > max(abs(x_m_temp))
-                warning("xMax_m is too large for nFFTx. Decrease xMax_m or increase nFFTx")
+                showErrorMessage(obj.im,"xMax_m is too large for nFFTx. Decrease xMax_m or increase nFFTx","3D RMA Error")
                 obj.isFail = true;
                 return;
             end
             if max(abs(obj.y_m)) > max(abs(y_m_temp))
-                warning("yMax_m is too large for nFFTy. Decrease yMax_m or increase nFFTy")
+                showErrorMessage(obj.im,"yMax_m is too large for nFFTy. Decrease yMax_m or increase nFFTy","3D RMA Error")
                 obj.isFail = true;
                 return;
             end
             if max(obj.z_m) > max(z_m_temp)
-                warning("zMax_m is too large for nFFTz. Decrease zMax_m or increase nFFTz")
+                showErrorMessage(obj.im,"zMax_m is too large for nFFTz. Decrease zMax_m or increase nFFTz","3D RMA Error")
                 obj.isFail = true;
                 return;
             end
@@ -126,43 +136,44 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
         function verifyReconstruction(obj)
             % Verify the reconstruction can continue
             
-            if obj.sar.scanMethod ~= "Rectilinear"
-                warning("Must use 2-D XY SAR scan to use 2-D SAR 3-D RMA image reconstruction method!");
+            if obj.scanner.method ~= "Rectilinear"
+                showErrorMessage(obj.im,"Must use 2-D XY SAR scan to use 2-D SAR 3-D RMA image reconstruction method!","3D RMA Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure array is colinear
-            if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*eps
-                warning("MIMO array must be colinear. Please disable necessary elements.");
+            if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*sqrt(eps)
+                showErrorMessage(obj.im,"MIMO array must be colinear. Please disable necessary elements.","3D RMA Error");
                 obj.isFail = true;
                 return
             end
             
             % Ensure virtual array is uniform
-            if mean(diff(obj.ant.vx.xyz_m(:,2),2)) > eps
-                warning("Virtual antenna array is nonuniform! Change antenna positions.");
+            if mean(diff(obj.ant.vx.xyz_m(:,2),2)) > sqrt(eps)
+                showErrorMessage(obj.im,"Virtual antenna array is nonuniform! Change antenna positions.","3D RMA Error");
                 obj.isFail = true;
                 return
             end
             
             % And sar step size is correct
-            if obj.sar.yStep_m - mean(diff(obj.ant.vx.xyz_m(:,2)))*obj.ant.vx.numVx > 8*eps
-                warning("SAR step size is incorrect!");
+            if obj.scanner.yStep_m - mean(diff(obj.ant.vx.xyz_m(:,2)))*obj.ant.vx.numVx > 8*sqrt(eps)
+                showErrorMessage(obj.im,"SAR step size is incorrect!","3D RMA Error");
                 obj.isFail = true;
                 return
             end
             
-            if ~obj.ant.isEPC && ~obj.isMult2Mono
+            if ~(isAppEPC(obj.im.app) || obj.ant.isEPC) && ~obj.isMult2Mono
                 % If using MIMO Array
                 % Ensure multistatic-to-monostatic approximation is employed
-                warning("Must use multistatic-to-monostatic approximation to use uniform method!");
+                showErrorMessage(obj.im,"Must use multistatic-to-monostatic approximation to use uniform method!","3D RMA Error");
                 obj.isFail = true;
                 return
             end
             
             % Everything is okay to continue
-            obj.yStep_m = obj.sar.yStep_m/obj.ant.vx.numVx;
+            obj.yStep_m = obj.scanner.yStep_m/obj.ant.vx.numVx;
+            obj.isFail = false;
         end
         
         function imXYZ_out = computeReconstruction(obj)
@@ -186,7 +197,7 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
         function reconstruct(obj)
             % Reconstruct the image using the 3-D Range Migration Algorithm
             
-            % sarData is of size (sar.numY, sar.numX, fmcw.ADCSamples)
+            % sarData is of size (scanner.numY, scanner.numX, wav.Nk)
             % Zero-Pad Data: s(y,x,k)
             sarDataPadded = obj.sarData;
             sarDataPadded = padarray(sarDataPadded,[floor((obj.nFFTy-size(obj.sarData,1))/2) 0],0,'pre');
@@ -278,7 +289,7 @@ classdef uniform_XY_SAR_XYZ_RMA < handle
         
         function displayImage(obj)
             % Display the reconstructed x-y-z image
-            displayImage3D_app(obj.im);
+            displayImage3D(obj.im);
         end
         
         function x = make_x(obj,xStep_m,nFFTx)

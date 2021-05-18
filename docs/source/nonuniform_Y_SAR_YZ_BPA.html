@@ -1,0 +1,340 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="helpwin2.css"><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/shared/scripts/helpservices.js"></script><title>nonuniform_Y_SAR_YZ_BPA - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">nonuniform_Y_SAR_YZ_BPA - MATLAB File Help</td>
+            <td class="subheader-right"><a href="matlab:edit nonuniform_Y_SAR_YZ_BPA">View code for nonuniform_Y_SAR_YZ_BPA</a></td>
+         </tr>
+      </table>
+      <div class="title">nonuniform_Y_SAR_YZ_BPA</div>
+      <div class="helptext"><pre><!--helptext -->  <span class="helptopic">nonuniform_Y_SAR_YZ_BPA</span> is a reconstructor class that performs a
+  3-D Backprojection Algorithm image reconstruction. The synthetic
+  aperture must span the y axis x=0 and can be nonuniformly spaced or use
+  a MIMO array, even overlapping. The target can be a 1-D or 2-D target in
+  y-z space
+ 
+  Copyright (C) 2021 Josiah W. Smith
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:doc('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.nonuniform_Y_SAR_YZ_BPA')">nonuniform_Y_SAR_YZ_BPA</a></td>
+            <td class="m-help">Set the properties corresponding to the object handles for&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.ant')">ant</a></td>
+            <td class="m-help">A THzAntennaArray object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.estTime')">estTime</a></td>
+            <td class="m-help">Structure for holding the estimated time until completion parameters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.im')">im</a></td>
+            <td class="m-help">A THzImageReconstruction object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.imXYZ')">imXYZ</a></td>
+            <td class="m-help">Reconstructed image&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.isAmplitudeFactor')">isAmplitudeFactor</a></td>
+            <td class="m-help">Boolean whether or not to include the amplitude factor in the image reconstruction process&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.isFail')">isFail</a></td>
+            <td class="m-help">Boolean whether or not the reconstruction has failed&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.isGPU')">isGPU</a></td>
+            <td class="m-help">Boolean whether or not to use the GPU for image reconstruction&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.k_vec')">k_vec</a></td>
+            <td class="m-help">Instantaneous wavenumber vector&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.rx_xyz_m')">rx_xyz_m</a></td>
+            <td class="m-help">x-y-z coordinates of the receiver antennas in the synthetic aperture&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.sarData')">sarData</a></td>
+            <td class="m-help">Computed beat signal&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.scanner')">scanner</a></td>
+            <td class="m-help">A THzScanner object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.sizeTarget')">sizeTarget</a></td>
+            <td class="m-help">Dimensions of the desired target, as specified by the user&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.target')">target</a></td>
+            <td class="m-help">A THzTarget object handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.target_xyz_m')">target_xyz_m</a></td>
+            <td class="m-help">x-y-z coordinates of the voxels in the target domain, as specified by the user&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.tx_xyz_m')">tx_xyz_m</a></td>
+            <td class="m-help">x-y-z coordinates of the transmitter antennas in the synthetic aperture&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.vx_xyz_m')">vx_xyz_m</a></td>
+            <td class="m-help">x-y-z coordinates of the virtual elements in the synthetic aperture&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.wav')">wav</a></td>
+            <td class="m-help">A THzWaveformParameters object handle&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.
+               Help for nonuniform_Y_SAR_YZ_BPA/addlistener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.computeReconstruction')">computeReconstruction</a></td>
+            <td class="m-help">Update the reconstruction algorithm and attempt the&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.
+               Help for nonuniform_Y_SAR_YZ_BPA/delete is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.displayImage')">displayImage</a></td>
+            <td class="m-help">Display the reconstructed y-z image&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.
+               Help for nonuniform_Y_SAR_YZ_BPA/eq is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.
+               Help for nonuniform_Y_SAR_YZ_BPA/findobj is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.
+               Help for nonuniform_Y_SAR_YZ_BPA/findprop is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.ge')">ge</a></td>
+            <td class="m-help">&gt;= (GE)   Greater than or equal relation for handles.
+               Help for nonuniform_Y_SAR_YZ_BPA/ge is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.getParameters')">getParameters</a></td>
+            <td class="m-help">Get the parameters from the object handles&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.gt')">gt</a></td>
+            <td class="m-help">&gt; (GT)   Greater than relation for handles.
+               Help for nonuniform_Y_SAR_YZ_BPA/gt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.
+               Help for nonuniform_Y_SAR_YZ_BPA/isvalid is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.le')">le</a></td>
+            <td class="m-help">&lt;= (LE)   Less than or equal relation for handles.
+               Help for nonuniform_Y_SAR_YZ_BPA/le is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.
+               Help for nonuniform_Y_SAR_YZ_BPA/listener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.lt')">lt</a></td>
+            <td class="m-help">&lt; (LT)   Less than relation for handles.
+               Help for nonuniform_Y_SAR_YZ_BPA/lt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.
+               Help for nonuniform_Y_SAR_YZ_BPA/ne is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.
+               Help for nonuniform_Y_SAR_YZ_BPA/notify is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.reconstruct')">reconstruct</a></td>
+            <td class="m-help">the image using the 2-D Backprojection Algorithm&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.update')">update</a></td>
+            <td class="m-help">the reconstruction algorithm by getting the parameters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.verifyReconstruction')">verifyReconstruction</a></td>
+            <td class="m-help">Verify that the reconstruction can continue. The scan must be&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('nonuniform_Y_SAR_YZ_BPA.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.
+               Help for nonuniform_Y_SAR_YZ_BPA/ObjectBeingDestroyed is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>

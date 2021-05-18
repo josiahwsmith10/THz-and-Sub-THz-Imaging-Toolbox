@@ -29,4 +29,10 @@ ylabel(h,'dB','fontsize',im.fontSize)
 xlim(h,[im.y_m(1),im.y_m(end)])
 ylim(h,[im.dBMin 0])
 title(h,"Reconstructed Image",'fontsize',im.fontSize)
+
+if im.isApp
+    figure(im.fig.f)
+    drawnow
+    figure(im.app.UIFigure)
+end
 end

@@ -1,0 +1,468 @@
+<html>
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   
+      <link rel="stylesheet" href="helpwin2.css"><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/product/scripts/jquery/jquery-latest.js"></script><script type="text/javascript" src="https://www.mathworks.com/help/releases/R2021a/includes/shared/scripts/helpservices.js"></script><title>THzScanner - MATLAB File Help</title>
+   </head>
+   <body>
+      <!--Single-page help-->
+      <table border="0" cellspacing="0" width="100%">
+         <tr class="subheader">
+            <td class="headertitle">THzScanner - MATLAB File Help</td>
+            <td class="subheader-right"><a href="matlab:edit THzScanner">View code for THzScanner</a></td>
+         </tr>
+      </table>
+      <div class="title">THzScanner</div>
+      <div class="helptext"><pre><!--helptext -->  <span class="helptopic">THzScanner</span> object holds the properties and methods used for simulating a
+  THz imaging scanning scenario in four modes: linear, rectilinear
+  (planar), circular, or cylindrical
+ 
+  Copyright (C) 2021 Josiah W. Smith
+ 
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.</pre></div><!--after help -->
+      <!--Class-->
+      <div class="sectiontitle">Class Details</div>
+      <table class="class-details">
+         <tr>
+            <td class="class-detail-label">Superclasses</td>
+            <td><a href="matlab:doc('handle')">handle</a></td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Sealed</td>
+            <td>false</td>
+         </tr>
+         <tr>
+            <td class="class-detail-label">Construct on load</td>
+            <td>false</td>
+         </tr>
+      </table>
+      <!--Constructors-->
+      <div class="sectiontitle"><a name="constructors"></a>Constructor Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.THzScanner')">THzScanner</a></td>
+            <td class="m-help">Sets up the ant and app properties&nbsp;</td>
+         </tr>
+      </table>
+      <!--Properties-->
+      <div class="sectiontitle"><a name="properties"></a>Property Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.X_m')">X_m</a></td>
+            <td class="m-help">Temporary storage of the entire aperture's x-coordinates&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.Y_m')">Y_m</a></td>
+            <td class="m-help">Temporary storage of the entire aperture's y-coordinates&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.Z_m')">Z_m</a></td>
+            <td class="m-help">Temporary storage of the entire aperture's z-coordinates&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.ant')">ant</a></td>
+            <td class="m-help">A THzAntennaArray handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.app')">app</a></td>
+            <td class="m-help">App handle&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.fig')">fig</a></td>
+            <td class="m-help">Structure containing the figure and handle used for showing the target&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.isApp')">isApp</a></td>
+            <td class="m-help">Boolean whether or not to use the app functionality&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.method')">method</a></td>
+            <td class="m-help">Scanning mode: "Linear", "Rectilinear", "Circular", or "Cylindrical"&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.numTheta')">numTheta</a></td>
+            <td class="m-help">Number of angular steps&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.numX')">numX</a></td>
+            <td class="m-help">Number of steps along the x-dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.numY')">numY</a></td>
+            <td class="m-help">Number of steps along the y-dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.rx')">rx</a></td>
+            <td class="m-help">Structure containing the parameters (location, etc.) of the receiver antennas&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.sarSize')">sarSize</a></td>
+            <td class="m-help">Size of the SAR data after simulation (dimensions of the scan)&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.thetaMax_deg')">thetaMax_deg</a></td>
+            <td class="m-help">Maximum angle for circular or cylindrical scans in degrees&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.theta_rad')">theta_rad</a></td>
+            <td class="m-help">Scanning points along which the antenna array is scanned in the angular dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.tx')">tx</a></td>
+            <td class="m-help">Structure containing the parameters (location, etc.) of the transmitter antennas&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.vx')">vx</a></td>
+            <td class="m-help">Structure containing the parameters (location, etc.) of the virtual element antennas&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.xSize_m')">xSize_m</a></td>
+            <td class="m-help">Size of the synthetic aperture along the x-dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.xStep_m')">xStep_m</a></td>
+            <td class="m-help">Step size along the x-dimension to move the antenna array in meters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.x_m')">x_m</a></td>
+            <td class="m-help">Scanning points along which the antenna array is scanned in the x-dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.xyz_m')">xyz_m</a></td>
+            <td class="m-help">Location in x-y-z of the synthetic aperture, an Nx3 array, where N is the total number of synthetic elements and each row
+               contains the [x,y,z] coordinates of each element&nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.ySize_m')">ySize_m</a></td>
+            <td class="m-help">Size of the synthetic aperture along the y-dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.yStep_m')">yStep_m</a></td>
+            <td class="m-help">Step size along the y-dimension to move the antenna array in meters&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.y_m')">y_m</a></td>
+            <td class="m-help">Scanning points along which the antenna array is scanned in the y-dimension&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.z_m')">z_m</a></td>
+            <td class="m-help">Scanning points along which the antenna array is scanned in the z-dimension&nbsp;</td>
+         </tr>
+      </table>
+      <!--Methods-->
+      <div class="sectiontitle"><a name="methods"></a>Method Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.CloseFigures')">CloseFigures</a></td>
+            <td class="m-help">Attempts to close the figures&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.Compute')">Compute</a></td>
+            <td class="m-help">positions of the THz scanning synthetic array&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.ComputeCircular')">ComputeCircular</a></td>
+            <td class="m-help">Computes the circular scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.ComputeCylindrical')">ComputeCylindrical</a></td>
+            <td class="m-help">Computes the cylindrical scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.ComputeLinear')">ComputeLinear</a></td>
+            <td class="m-help">Computes the linear scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.ComputeRectilinear')">ComputeRectilinear</a></td>
+            <td class="m-help">Computes the rectilinear scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.Display')">Display</a></td>
+            <td class="m-help">Plots either the MIMO or EPC array&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.DisplayEPC')">DisplayEPC</a></td>
+            <td class="m-help">Plots the equivalent-phase-center (EPC) synthetic array&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.DisplayMIMO')">DisplayMIMO</a></td>
+            <td class="m-help">Plots the MIMO synthetic array&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.Get')">Get</a></td>
+            <td class="m-help">parameters of THz scanning pattern from the app&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.InitializeFigures')">InitializeFigures</a></td>
+            <td class="m-help">Initilizes the figures&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.Update')">Update</a></td>
+            <td class="m-help">the scanner and displays in the figures&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.addlistener')">addlistener</a></td>
+            <td class="m-help">Add listener for event.
+               Help for THzScanner/addlistener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.delete')">delete</a></td>
+            <td class="m-help">Delete a handle object.
+               Help for THzScanner/delete is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.eq')">eq</a></td>
+            <td class="m-help">== (EQ)   Test handle equality.
+               Help for THzScanner/eq is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.findobj')">findobj</a></td>
+            <td class="m-help">Find objects matching specified conditions.
+               Help for THzScanner/findobj is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.findprop')">findprop</a></td>
+            <td class="m-help">Find property of MATLAB handle object.
+               Help for THzScanner/findprop is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.ge')">ge</a></td>
+            <td class="m-help">&gt;= (GE)   Greater than or equal relation for handles.
+               Help for THzScanner/ge is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.getsarAxes')">getsarAxes</a></td>
+            <td class="m-help">Computes the scanning position axes&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.gt')">gt</a></td>
+            <td class="m-help">&gt; (GT)   Greater than relation for handles.
+               Help for THzScanner/gt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">Sealed 
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.isvalid')">isvalid</a></td>
+            <td class="m-help">Test handle validity.
+               Help for THzScanner/isvalid is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.le')">le</a></td>
+            <td class="m-help">&lt;= (LE)   Less than or equal relation for handles.
+               Help for THzScanner/le is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.listener')">listener</a></td>
+            <td class="m-help">Add listener for event without binding the listener to the source object.
+               Help for THzScanner/listener is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.lt')">lt</a></td>
+            <td class="m-help">&lt; (LT)   Less than relation for handles.
+               Help for THzScanner/lt is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.ne')">ne</a></td>
+            <td class="m-help">~= (NE)   Not equal relation for handles.
+               Help for THzScanner/ne is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.notify')">notify</a></td>
+            <td class="m-help">Notify listeners of event.
+               Help for THzScanner/notify is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.verifyCircular')">verifyCircular</a></td>
+            <td class="m-help">Verifies the circular scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.verifyCylindrical')">verifyCylindrical</a></td>
+            <td class="m-help">Verifies the cylindrical scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.verifyLinear')">verifyLinear</a></td>
+            <td class="m-help">Verifies the linear scan type&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.verifyLinearity')">verifyLinearity</a></td>
+            <td class="m-help">Verifies that the MIMO antenna array is colinear&nbsp;</td>
+         </tr>
+         <tr class="summary-item">
+            <td class="attributes">
+               &nbsp;
+               
+            </td>
+            <td class="name"><a href="matlab:doc('THzScanner.verifyRectilinear')">verifyRectilinear</a></td>
+            <td class="m-help">Verifies the rectilinear scan type&nbsp;</td>
+         </tr>
+      </table>
+      <!--Events-->
+      <div class="sectiontitle"><a name="events"></a>Event Summary
+      </div>
+      <table class="summary-list">
+         <tr class="summary-item">
+            <td class="name"><a href="matlab:doc('THzScanner.ObjectBeingDestroyed')">ObjectBeingDestroyed</a></td>
+            <td class="m-help">Notifies listeners that a particular object has been destroyed.
+               Help for THzScanner/ObjectBeingDestroyed is inherited from superclass HANDLE
+               &nbsp;
+            </td>
+         </tr>
+      </table>
+   </body>
+</html>

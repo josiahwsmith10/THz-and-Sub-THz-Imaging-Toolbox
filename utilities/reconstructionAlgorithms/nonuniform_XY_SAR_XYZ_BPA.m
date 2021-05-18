@@ -36,11 +36,11 @@ classdef nonuniform_XY_SAR_XYZ_BPA < handle
         
         estTime             % Structure for holding the estimated time until completion parameters
         
-        fmcw                % fmcwChirpParameters object
-        ant                 % sarAntennaArray object
-        sar                 % sarScenario object
-        target              % sarTarget object
-        im                  % sarImage object
+        wav                 % A THzWaveformParameters object handle
+        ant                 % A THzAntennaArray object handle
+        scanner             % A THzScanner object handle
+        target              % A THzTarget object handle
+        im                  % A THzImageReconstruction object handle
     end
     
     methods
@@ -49,9 +49,9 @@ classdef nonuniform_XY_SAR_XYZ_BPA < handle
             % the imaging scenario and get the parameters from those object
             % handles
             
-            obj.fmcw = im.fmcw;
+            obj.wav = im.wav;
             obj.ant = im.ant;
-            obj.sar = im.sar;
+            obj.scanner = im.scanner;
             obj.target = im.target;
             obj.im = im;
             
@@ -71,21 +71,21 @@ classdef nonuniform_XY_SAR_XYZ_BPA < handle
         function getParameters(obj)
             % Get the parameters from the object handles
             
-            obj.tx_xyz_m = obj.sar.tx.xyz_m;
-            obj.rx_xyz_m = obj.sar.rx.xyz_m;
-            obj.vx_xyz_m = obj.sar.vx.xyz_m;
+            obj.tx_xyz_m = obj.scanner.tx.xyz_m;
+            obj.rx_xyz_m = obj.scanner.rx.xyz_m;
+            obj.vx_xyz_m = obj.scanner.vx.xyz_m;
             
             [X,Y,Z] = ndgrid(obj.im.x_m(:),obj.im.y_m(:),obj.im.z_m(:));
             obj.sizeTarget = [obj.im.numX,obj.im.numY,obj.im.numZ];
             
             obj.target_xyz_m = [X(:),Y(:),Z(:)];
             
-            obj.sarData = reshape(obj.target.sarData,[],obj.fmcw.ADCSamples);
+            obj.sarData = reshape(obj.target.sarData,[],obj.wav.Nk);
             
             obj.isGPU = obj.im.isGPU;
             obj.isAmplitudeFactor = obj.target.isAmplitudeFactor;
             
-            obj.k_vec = obj.fmcw.k;
+            obj.k_vec = obj.wav.k;
         end
         
         function verifyReconstruction(obj)
@@ -94,8 +94,8 @@ classdef nonuniform_XY_SAR_XYZ_BPA < handle
             
             obj.isFail = false;
             
-            if obj.sar.scanMethod ~= "Rectilinear"
-                warning("Must use 2-D XY SAR scan to use 2-D SAR 3-D BPA image reconstruction method!");
+            if obj.scanner.method ~= "Rectilinear"
+                showErrorMessage(obj.im,"Must use 2-D XY SAR scan to use 2-D SAR 3-D BPA image reconstruction method!","3D BPA Error");
                 obj.isFail = true;
                 return
             end
@@ -136,7 +136,8 @@ classdef nonuniform_XY_SAR_XYZ_BPA < handle
             try
                 obj.imXYZ = reshape(obj.imXYZ,obj.sizeTarget);
             catch
-                warning("WHAT!")
+                showErrorMessage(obj.im,"Error in BPA","BPA Error!");
+                obj.isFail = true;
             end
         end
         

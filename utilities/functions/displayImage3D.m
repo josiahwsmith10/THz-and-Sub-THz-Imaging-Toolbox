@@ -58,4 +58,10 @@ xlim(h,[im.x_m(1),im.x_m(end)])
 ylim(h,[im.z_m(1),im.z_m(end)])
 zlim(h,[im.y_m(1),im.y_m(end)])
 title(h,"Reconstructed Image",'fontsize',im.fontSize)
+
+if im.isApp
+    figure(im.fig.f)
+    drawnow
+    figure(im.app.UIFigure)
+end
 end
