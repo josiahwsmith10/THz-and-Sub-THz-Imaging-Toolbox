@@ -1,2 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<toolset id="user_apps_toolset" template="false"/>
+<toolset id="user_apps_toolset" template="false">
+   <tool app_file_path="THzImagingApp.mlapp" handler_class="com.mathworks.deployment.desktop.toolstrip.ToolboxToolSetExtensionHandler" id="634418e8-4164-4479-955a-33e81bba44b3:THzImagingApp.mlapp" label="THz and Sub-THz Imaging App" quick_access_eligible="false" toolset_id="user_apps_toolset">
+      <callback>THzImagingApp</callback>
+      <summary>Interactive user interface simulating the complete process of SAR and RAR THz/Sub-THz imaging scenarios.</summary>
+      <icon filename="matlab_app_generic_icon_24"/>
+      <icon filename="matlab_app_generic_icon_16"/>
+      <parent_tool id="my_apps" toolset_id="apps_toolset"/>
+   </tool>
+</toolset>

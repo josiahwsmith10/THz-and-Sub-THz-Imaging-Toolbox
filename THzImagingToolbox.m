@@ -10,7 +10,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 % GNU General Public License for more details.
 
-cd(string(fileparts(which('THzImagingApp.mlapp'))) + "\..\");
+cd(string(fileparts(which('THzImagingApp.mlapp'))));
 addpath(genpath("docs"),genpath("demos"),genpath("utilities"),genpath("saved"));
 
 disp("Opening THz and Sub-THz Imaging Toolbox");
