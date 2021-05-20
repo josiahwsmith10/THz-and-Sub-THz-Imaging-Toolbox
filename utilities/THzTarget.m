@@ -213,7 +213,7 @@ classdef THzTarget < handle
             % Gets the positions and amplitudes from the STL target
             
             if obj.isApp
-                obj.app.LoadSTLLamp.Color = "yellow";
+                obj = getSTLParameters(obj);
             end
             
             if ~obj.stl.isLoaded || string(obj.stl.fileNameLoaded) ~= string(obj.stl.fileName)
@@ -258,8 +258,11 @@ classdef THzTarget < handle
         function obj = loadSTL(obj)
             % Loads the STL file and updates stl.isLoaded
             
+            if obj.isApp
+                obj.app.LoadSTLLamp.Color = "yellow";
+            end
+            
             drawnow
-            obj = getSTLParameters(obj);
             try
                 [~,obj.stl.v] = stlread2011("./saved/pngstl/" + obj.stl.fileName);
                 obj.stl.fileNameLoaded = obj.stl.fileName;
@@ -577,6 +580,12 @@ classdef THzTarget < handle
             R_T_plus_R_R = gather(R_T_plus_R_R);
             
             if obj.isApp
+                selection = uiconfirm(obj.app.UIFigure,'Would you like to use the large target computation method (CPU intensive, likely time intensive)?','Use Large Target Method?',...
+                    'Icon','warning');
+                if string(selection) == "Cancel"
+                    UIFigureCloseRequest(obj.app, 0);
+                    return;
+                end
                 d.Title = "Generating Echo Signal Using Large Target Method";
             end
             [R_unique,~,IC] = unique(R_T_plus_R_R,'stable');
