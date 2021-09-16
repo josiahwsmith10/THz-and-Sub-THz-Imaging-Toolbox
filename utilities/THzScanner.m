@@ -143,7 +143,7 @@ classdef THzScanner < handle
                 obj.method = obj.app.SARMethodDropDown.Value;
             end
         end
-                
+        
         function obj = ComputeLinear(obj)
             % Computes the linear scan type
             
@@ -171,6 +171,23 @@ classdef THzScanner < handle
             obj.tx.xyz_m = reshape(obj.tx.xyz_m,[],3);
             obj.rx.xyz_m = reshape(obj.rx.xyz_m,[],3);
             obj.vx.xyz_m = reshape(obj.vx.xyz_m,[],3);
+            
+            [obj.tx.unique.xyz_m,obj.tx.unique.IA,obj.tx.unique.IC] = unique(obj.tx.xyz_m,'row');
+            [obj.rx.unique.xyz_m,obj.rx.unique.IA,obj.rx.unique.IC] = unique(obj.rx.xyz_m,'row');
+            [obj.vx.unique.xyz_m,obj.vx.unique.IA,obj.vx.unique.IC] = unique(obj.vx.xyz_m,'row');
+            
+            % Normal vectors for each antenna element
+            obj.tx.unique.nz = [0,0,1];
+            obj.rx.unique.nz = [0,0,1];
+            obj.vx.unique.nz = [0,0,1];
+            
+            obj.tx.unique.ny = [0,1,0];
+            obj.rx.unique.ny = [0,1,0];
+            obj.vx.unique.ny = [0,1,0];
+            
+            obj.tx.unique.nx = [1,0,0];
+            obj.rx.unique.nx = [1,0,0];
+            obj.vx.unique.nx = [1,0,0];
             
             if isAppEPC(obj.app) || obj.ant.isEPC
                 obj.sarSize = obj.ant.vx.numVx*obj.numY;
@@ -208,6 +225,36 @@ classdef THzScanner < handle
             obj.rx.xyz_m = reshape(obj.rx.xyz_m,[],3);
             obj.vx.xyz_m = reshape(obj.vx.xyz_m,[],3);
             
+            [obj.tx.unique.xyz_m,obj.tx.unique.IA,obj.tx.unique.IC] = unique(obj.tx.xyz_m,'row');
+            [obj.rx.unique.xyz_m,obj.rx.unique.IA,obj.rx.unique.IC] = unique(obj.rx.xyz_m,'row');
+            [obj.vx.unique.xyz_m,obj.vx.unique.IA,obj.vx.unique.IC] = unique(obj.vx.xyz_m,'row');
+            
+            % Normal vectors for each antenna element
+            obj.tx.unique.nz = [0,0,1];
+            obj.rx.unique.nz = [0,0,1];
+            obj.vx.unique.nz = [0,0,1];
+            
+            obj.tx.unique.ny = [0,1,0];
+            obj.rx.unique.ny = [0,1,0];
+            obj.vx.unique.ny = [0,1,0];
+            
+            obj.tx.unique.nx = [1,0,0];
+            obj.rx.unique.nx = [1,0,0];
+            obj.vx.unique.nx = [1,0,0];
+            
+            % Normal vectors for each antenna element
+            obj.tx.nz = [0,0,1];
+            obj.rx.nz = [0,0,1];
+            obj.vx.nz = [0,0,1];
+            
+            obj.tx.ny = [0,1,0];
+            obj.rx.ny = [0,1,0];
+            obj.vx.ny = [0,1,0];
+            
+            obj.tx.nx = [1,0,0];
+            obj.rx.nx = [1,0,0];
+            obj.vx.nx = [1,0,0];
+            
             if isAppEPC(obj.app) || obj.ant.isEPC
                 obj.sarSize = [obj.ant.vx.numVx*obj.numY,obj.numX];
             else
@@ -233,7 +280,7 @@ classdef THzScanner < handle
             obj = getsarAxes(obj);
             
             obj.x_m = obj.ant.tx.z0_m*cos(obj.theta_rad);
-            obj.y_m = zeros(size(obj.theta_rad));
+            obj.y_m = zeros(size(obj.theta_rad),'single');
             obj.z_m = obj.ant.tx.z0_m*sin(obj.theta_rad) - obj.ant.tx.z0_m;
             
             obj.xyz_m = reshape([obj.x_m(:),obj.y_m(:),obj.z_m(:)],1,[],3);
@@ -245,6 +292,31 @@ classdef THzScanner < handle
             obj.tx.xyz_m = reshape(obj.tx.xyz_m,[],3);
             obj.rx.xyz_m = reshape(obj.rx.xyz_m,[],3);
             obj.vx.xyz_m = reshape(obj.vx.xyz_m,[],3);
+            
+            [obj.tx.unique.xyz_m,obj.tx.unique.IA,obj.tx.unique.IC] = unique(obj.tx.xyz_m,'row');
+            [obj.rx.unique.xyz_m,obj.rx.unique.IA,obj.rx.unique.IC] = unique(obj.rx.xyz_m,'row');
+            [obj.vx.unique.xyz_m,obj.vx.unique.IA,obj.vx.unique.IC] = unique(obj.vx.xyz_m,'row');
+            
+            % Normal vectors for each antenna element
+            obj.tx.unique.nz = [-obj.tx.unique.xyz_m(:,1),zeros(size(obj.tx.unique.xyz_m,1),1,'single'),-obj.tx.unique.xyz_m(:,3)];
+            obj.rx.unique.nz = [-obj.rx.unique.xyz_m(:,1),zeros(size(obj.rx.unique.xyz_m,1),1,'single'),-obj.rx.unique.xyz_m(:,3)];
+            obj.vx.unique.nz = [-obj.vx.unique.xyz_m(:,1),zeros(size(obj.vx.unique.xyz_m,1),1,'single'),-obj.vx.unique.xyz_m(:,3)];
+            
+            obj.tx.unique.nz = obj.tx.unique.nz ./ vecnorm(obj.tx.unique.nz,2,2);
+            obj.rx.unique.nz = obj.rx.unique.nz ./ vecnorm(obj.rx.unique.nz,2,2);
+            obj.vx.unique.nz = obj.vx.unique.nz ./ vecnorm(obj.vx.unique.nz,2,2);
+            
+            obj.tx.unique.ny = [0,1,0];
+            obj.rx.unique.ny = [0,1,0];
+            obj.vx.unique.ny = [0,1,0];
+            
+            obj.tx.unique.nx = [obj.tx.unique.nz(:,3),obj.tx.unique.nz(:,2),-obj.tx.unique.nz(:,1)];
+            obj.rx.unique.nx = [obj.rx.unique.nz(:,3),obj.rx.unique.nz(:,2),-obj.rx.unique.nz(:,1)];
+            obj.vx.unique.nx = [obj.vx.unique.nz(:,3),obj.vx.unique.nz(:,2),-obj.vx.unique.nz(:,1)];
+            
+            obj.tx.unique.nx = obj.tx.unique.nx ./ vecnorm(obj.tx.unique.nx,2,2);
+            obj.rx.unique.nx = obj.rx.unique.nx ./ vecnorm(obj.rx.unique.nx,2,2);
+            obj.vx.unique.nx = obj.vx.unique.nx ./ vecnorm(obj.vx.unique.nx,2,2);
             
             % Unwrap obj.tx.xyz_m & obj.rx.xyz_m as [numTheta,3]
             obj.sarSize = obj.numTheta;
@@ -283,6 +355,31 @@ classdef THzScanner < handle
             obj.tx.xyz_m = reshape(obj.tx.xyz_m,[],3);
             obj.rx.xyz_m = reshape(obj.rx.xyz_m,[],3);
             obj.vx.xyz_m = reshape(obj.vx.xyz_m,[],3);
+            
+            [obj.tx.unique.xyz_m,obj.tx.unique.IA,obj.tx.unique.IC] = unique(obj.tx.xyz_m,'row');
+            [obj.rx.unique.xyz_m,obj.rx.unique.IA,obj.rx.unique.IC] = unique(obj.rx.xyz_m,'row');
+            [obj.vx.unique.xyz_m,obj.vx.unique.IA,obj.vx.unique.IC] = unique(obj.vx.xyz_m,'row');
+            
+            % Normal vectors for each antenna element
+            obj.tx.unique.nz = [-obj.tx.unique.xyz_m(:,1),zeros(size(obj.tx.unique.xyz_m,1),1,'single'),-obj.tx.unique.xyz_m(:,3)];
+            obj.rx.unique.nz = [-obj.rx.unique.xyz_m(:,1),zeros(size(obj.rx.unique.xyz_m,1),1,'single'),-obj.rx.unique.xyz_m(:,3)];
+            obj.vx.unique.nz = [-obj.vx.unique.xyz_m(:,1),zeros(size(obj.vx.unique.xyz_m,1),1,'single'),-obj.vx.unique.xyz_m(:,3)];
+            
+            obj.tx.unique.nz = obj.tx.unique.nz ./ vecnorm(obj.tx.unique.nz,2,2);
+            obj.rx.unique.nz = obj.rx.unique.nz ./ vecnorm(obj.rx.unique.nz,2,2);
+            obj.vx.unique.nz = obj.vx.unique.nz ./ vecnorm(obj.vx.unique.nz,2,2);
+            
+            obj.tx.unique.ny = [0,1,0];
+            obj.rx.unique.ny = [0,1,0];
+            obj.vx.unique.ny = [0,1,0];
+            
+            obj.tx.unique.nx = [obj.tx.unique.nz(:,3),obj.tx.unique.nz(:,2),-obj.tx.unique.nz(:,1)];
+            obj.rx.unique.nx = [obj.rx.unique.nz(:,3),obj.rx.unique.nz(:,2),-obj.rx.unique.nz(:,1)];
+            obj.vx.unique.nx = [obj.vx.unique.nz(:,3),obj.vx.unique.nz(:,2),-obj.vx.unique.nz(:,1)];
+            
+            obj.tx.unique.nx = obj.tx.unique.nx ./ vecnorm(obj.tx.unique.nx,2,2);
+            obj.rx.unique.nx = obj.rx.unique.nx ./ vecnorm(obj.rx.unique.nx,2,2);
+            obj.vx.unique.nx = obj.vx.unique.nx ./ vecnorm(obj.vx.unique.nx,2,2);
             
             if isAppEPC(obj.app) || obj.ant.isEPC
                 obj.sarSize = [obj.ant.vx.numVx*obj.numY,obj.numTheta];
@@ -326,7 +423,7 @@ classdef THzScanner < handle
                     obj.fig.sarh = handle(subplot(122));
                 end
             else
-                obj.fig.f = figure;
+                obj.fig.f = figure(1);
                 obj.fig.h = handle(axes);
             end
         end
@@ -434,6 +531,10 @@ classdef THzScanner < handle
         function Display(obj)
             % Plots either the MIMO or EPC array
             
+            if obj.ant.vx.numVx == 0
+                return;
+            end
+            
             if obj.isApp
                 if isempty(obj.fig.f) || ~isvalid(obj.fig.anth) || ~isvalid(obj.fig.sarh)
                     obj = InitializeFigures(obj);
@@ -525,6 +626,11 @@ classdef THzScanner < handle
             % Verifies that the MIMO antenna array is colinear
             %   tf = true - antenna array is colinear
             %   tf = false - antenna array is not colinear
+            
+            if isempty(obj.ant.tx.xyz_m) || isempty(obj.ant.rx.xyz_m);
+                tf = false;
+                return;
+            end
             
             if max(diff([obj.ant.tx.xy_m(:,1);obj.ant.rx.xy_m(:,1)])) > 8*eps
                 showErrorMessage(obj,"MIMO array must be colinear. Please disable necessary elements. Setting method to ""-""","Array topology error");

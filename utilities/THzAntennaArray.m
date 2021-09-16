@@ -19,6 +19,9 @@ classdef THzAntennaArray < handle
         rx = struct('xy_m',[],'xyz_m',[])   % Structure containing the parameters (location, etc.) of the receiver antennas
         vx = struct('xy_m','xyz_m')         % Structure containing the parameters (location, etc.) of the virtual element antennas
         
+        a = struct                          % Struct holding the antenna element properties
+        p = struct                          % Struct holding the antenna pattern properties
+        
         wav                                 % A THzWaveformParameters handle
         fig = struct("f",[],"h",[])         % Structure containing the figure and handle used for showing the antenna array
         
@@ -68,6 +71,11 @@ classdef THzAntennaArray < handle
                 obj.isApp = true;
                 obj.app = app;
             end
+            
+            obj.a.typeOld = "";
+            obj.p.isConfigured = false;
+            obj.p.isWidebandConfigured = false;
+            obj.p.isWideband = false;
         end
         
         function obj = Update(obj)
@@ -114,6 +122,10 @@ classdef THzAntennaArray < handle
             obj.rx.numRx = sum(obj.rx.xy_m(:,5));
             obj.vx.numVx = obj.tx.numTx * obj.rx.numRx;
             
+            if obj.vx.numVx == 0
+                return;
+            end
+            
             % Get only the enabled elements
             if obj.tx.numTx > 0
                 obj.tx.xy_m = obj.tx.xy_m(logical(obj.tx.xy_m(:,5)),[1,3])*obj.wav.lambda_m + obj.tx.xy_m(logical(obj.tx.xy_m(:,5)),[2,4])*1e-3;
@@ -154,6 +166,306 @@ classdef THzAntennaArray < handle
             obj.tx.xyz_m = obj.tx.xyz_m - temp;
             obj.rx.xyz_m = obj.rx.xyz_m - temp;
             obj.vx.xyz_m = obj.vx.xyz_m - temp;
+        end
+        
+        function obj = GetAntenna(obj)
+            % Gets the antenna element properties from the app
+            
+            if ~obj.isApp
+                warning("Must be using app to call GetAntenna method");
+                return;
+            end
+            
+            obj.p.precision = obj.app.AngularPrecisionEditField.Value;
+            obj.p.isWideband = obj.app.UsewidebandantennapatternCheckBox.Value;
+            obj.a.type = string(obj.app.TypeDropDown.Value);
+            obj.a.length_m = obj.app.LengthmmEditField.Value*1e-3;
+            obj.a.width_m = obj.app.WidthmmEditField.Value*1e-3;
+            
+            switch obj.a.type
+                case "Isotropic"
+                    obj.app.LengthmmEditField.Enable = false;
+                    obj.app.WidthmmEditField.Enable = false;
+                    obj.app.ConfigureAntennaPatternButton.Enable = false;
+                    obj.app.ShowAntennaPatternButton.Enable = false;
+                    obj.app.UsewidebandantennapatternCheckBox.Value = true;
+                    obj.app.UsewidebandantennapatternCheckBox.Enable = false;
+                case "HFSS"
+                    obj.app.LengthmmEditField.Enable = false;
+                    obj.app.WidthmmEditField.Enable = false;
+                    obj.app.ShowAntennaPatternButton.Enable = false;
+                    obj.app.ConfigureAntennaPatternButton.Enable = true;
+                    obj.app.UsewidebandantennapatternCheckBox.Value = false;
+                    obj.app.UsewidebandantennapatternCheckBox.Enable = false;
+                case "Patch"
+                    obj.app.LengthmmEditField.Enable = true;
+                    obj.app.WidthmmEditField.Enable = true;
+                    obj.app.ConfigureAntennaPatternButton.Enable = true;
+                    obj.app.ShowAntennaPatternButton.Enable = true;
+                    obj.app.UsewidebandantennapatternCheckBox.Enable = true;
+                case "Dipole"
+                    obj.app.LengthmmEditField.Enable = true;
+                    obj.app.WidthmmEditField.Enable = true;
+                    obj.app.ConfigureAntennaPatternButton.Enable = true;
+                    obj.app.ShowAntennaPatternButton.Enable = true;
+                    obj.app.UsewidebandantennapatternCheckBox.Enable = true;
+                otherwise
+            end
+        end
+        
+        function obj = UpdateAntenna(obj)
+            % Updates the antenna property
+            
+            if obj.isApp
+                obj.app.AntennaArrayUptoDateLamp.Color = 'yellow';
+                drawnow
+                
+                obj = GetAntenna(obj);
+            end
+            
+            try
+                obj = ConfigureAntenna(obj);
+            catch ME
+                if obj.isApp
+                    uialert(obj.app.UIFigure,ME.message,"Invalid Frequency");
+                    obj.app.AntennaArrayUptoDateLamp.Color = 'red';
+                end
+                obj.p.isConfigured = false;
+                return;
+            end
+            
+            if obj.isApp
+                obj.app.AntennaArrayUptoDateLamp.Color = 'green';
+            end
+        end
+        
+        function obj = ConfigureAntenna(obj)
+            % Computes the values of the antenna element
+            
+            switch obj.a.type
+                case "Isotropic"
+                    obj.p.isConfigured = true;
+                case "HFSS"
+                    % Do nothing
+                case "Patch"
+                    if obj.wav.fC + obj.wav.B > 200e9
+                        error("Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!");
+                    end
+                    obj.a.ant = design(patchMicrostrip,obj.wav.fC);
+                    obj.a.ant.Length = obj.a.length_m;
+                    obj.a.ant.Width = obj.a.width_m;
+                    obj.p.isConfigured = false;
+                    obj.p.isWidebandConfigured = false;
+                case "Dipole"
+                    if obj.wav.fC + obj.wav.B > 200e9
+                        error("Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!");
+                    end
+                    con = metal('Name','Copper','Conductivity', 5.96e7,'Thickness',17e-6);
+                    obj.a.ant = dipole('Length',obj.a.length_m,'Width',obj.a.width_m,...
+                        'Conductor',con,'Tilt',-90,'TiltAxis',[1 0 0]);
+                    obj.p.isConfigured = false;
+                    obj.p.isWidebandConfigured = false;
+                otherwise
+                    
+            end
+        end
+        
+        function obj = DisplayAntennaPattern(obj)
+            % Displays the antenna pattern
+            
+            figure;
+            pattern(obj.a.ant,obj.wav.fC);
+        end
+        
+        function obj = ConfigurePattern(obj)
+            % Creates the patternFunc property of the THzAntennaArray
+            % object which will return the normalized gain of the antenna
+            % pattern with the specified azimuth and elevation angle and
+            % frequency
+            
+            obj = GetAntenna(obj);
+            
+            % Only execute this command if the type is new
+            if obj.p.isConfigured || obj.a.type == "Isotropic"
+                obj.p.isConfigured = true;
+                return;
+            end
+            
+            % Bypass if HFSS mode
+            if obj.a.type == "HFSS"
+                obj = ConfigureHFSSAntenna(obj);
+                return;
+            end
+            
+            if obj.wav.fC + obj.wav.B > 200e9
+                if obj.isApp
+                    uialert(obj.app.UIFigure,"Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!","Invalid Frequency");
+                    obj.app.AntennaArrayUptoDateLamp.Color = 'red';
+                end
+                obj.p.isConfigured = false;
+                return;
+            end
+            
+            obj = UpdateAntenna(obj);
+            
+            % Create the progress dialog
+            if obj.isApp
+                d = uiprogressdlg(obj.app.UIFigure,'Title','Computing Antenna Pattern',...
+                    'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+            else
+                d = waitbar(0,'1','Name',' Computing Antenna Pattern...',...
+                    'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+            end
+            
+            az = 0:obj.p.precision:180;
+            el = 0:obj.p.precision:90;
+            
+            if ~obj.p.isWideband
+                temp = pattern(obj.a.ant,obj.wav.fC,az,el);
+                temp = 10.^(temp/10);
+                obj.p.pattern = single(temp);
+                
+                obj.p.pattern = obj.p.pattern/max(obj.p.pattern(:));
+                obj.p.patternVec = obj.p.pattern(:);
+                obj.p.isWidebandConfigured = false;
+            elseif obj.p.isWideband
+                obj.p.pattern = zeros(length(el),length(az),obj.wav.Nk,'single');
+                tocs = zeros(1,obj.wav.Nk,'single');
+                
+                for indK = 1:obj.wav.Nk
+                    if obj.isApp
+                        % Check for cancelation
+                        if d.CancelRequested
+                            warning("Antenna Pattern not Computed!")
+                            obj.p.pattern = ones(length(el),length(az),obj.wav.Nk);
+                            obj.p.isConfigured = false;
+                            return;
+                        end
+                    else
+                        if getappdata(d,'canceling')
+                            warning("Antenna Pattern not Computed!")
+                            obj.p.pattern = ones(length(el),length(az),obj.wav.Nk);
+                            obj.p.isConfigured = false;
+                            delete(d);
+                            return;
+                        end
+                    end
+                    
+                    tic
+                    temp = pattern(obj.a.ant,obj.wav.f(indK),az,el);
+                    temp = 10.^(temp/10);
+                    obj.p.pattern(:,:,indK) = single(temp);
+                    tocs(indK) = toc;
+                    
+                    if obj.isApp
+                        d.Value = indK/obj.wav.Nk;
+                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk);
+                    else
+                        waitbar(indK/obj.wav.Nk,d,"Computing Antenna Pattern. Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk));
+                    end
+                end
+                
+                obj.p.pattern = obj.p.pattern/max(obj.p.pattern(:));
+                obj.p.patternVec = reshape(obj.p.pattern,[],obj.wav.Nk);
+                obj.p.isWidebandConfigured = true;
+            end
+            
+            delete(d);
+            
+            obj.p.isConfigured = true;
+            
+            if obj.isApp
+                obj.app.ConfigureAntennaPatternButton.FontWeight = 'normal';
+            end
+        end
+        
+        function gain = computePattern(obj,az,el)
+            % Returns the gain for a given look direction across frequency
+            % as a column vector
+            
+            s = size(az);
+            az = az(:);
+            el = el(:);
+            
+            if obj.a.type == "Isotropic"
+                gain = 1;
+                return;
+            end
+            
+            if ~obj.p.isConfigured
+                gain = 1;
+                return;
+            end
+            
+            if obj.p.isWideband
+                if ~obj.p.isWidebandConfigured
+                    obj.p.isConfigured = false;
+                    obj = ConfigurePattern(obj);
+                end
+            end
+            
+            indAz = round(az/obj.p.precision + 1);
+            az = [];
+            indEl = round(el/obj.p.precision + 1);
+            el = [];
+            ind = sub2ind(size(obj.p.pattern(:,:,1)),indEl,indAz);
+            indAz = [];
+            indEl = [];
+            gain = obj.p.patternVec(ind,:);
+            gain = reshape(gain,s(1),s(2),[]);
+        end
+        
+        function obj = ConfigureHFSSAntenna(obj)
+            % Configures the antenna when importing an HFSS antenna pattern
+            % from a csv file
+            
+            % Get the user's file selection
+            [filename,pathname] = uigetfile("./saved/antennas/*.csv","Select Desired HFSS File to Load");
+            if filename == 0
+                warning("Antenna file not loaded!");
+                obj.p.isConfigured = false;
+                return;
+            else
+                loadPathFull = string(pathname) + string(filename);
+            end
+            
+            az = 0:obj.p.precision:180;
+            el = 0:obj.p.precision:90;
+            
+            hfss.t = readCSV_HFSS(loadPathFull);
+            hfss.az = unique(hfss.t.Phideg);
+            hfss.el = 90 - unique(hfss.t.Thetadeg);
+            hfss.data = reshape(hfss.t.dBDirTotal,length(hfss.az),length(hfss.el)).';
+            [EL,AZ] = ndgrid(el,az);
+            
+            temp = interpn(hfss.el(:),hfss.az(:),hfss.data,EL,AZ);
+            temp = 10.^(temp/10);
+            obj.p.pattern = single(temp);
+            
+            obj.p.pattern = obj.p.pattern/max(obj.p.pattern(:));
+            obj.p.patternVec = obj.p.pattern(:);
+            obj.p.isWidebandConfigured = false;
+            obj.p.isConfigured = true;
+            
+            function hfssTable = readCSV_HFSS(filename)
+                % Set up the Import Options and import the data
+                opts = delimitedTextImportOptions("NumVariables", 3);
+                
+                % Specify range and delimiter
+                opts.DataLines = [2, Inf];
+                opts.Delimiter = ",";
+                
+                % Specify column names and types
+                opts.VariableNames = ["Phideg", "Thetadeg", "dBDirTotal"];
+                opts.VariableTypes = ["double", "double", "double"];
+                
+                % Specify file level properties
+                opts.ExtraColumnsRule = "ignore";
+                opts.EmptyLineRule = "read";
+                
+                % Import the data
+                hfssTable = readtable(filename, opts);
+            end
         end
         
         function obj = InitializeFigures(obj)
@@ -301,7 +613,9 @@ classdef THzAntennaArray < handle
             obj.tx.xy_m = single(obj.tableTx);
             obj.rx.xy_m = single(obj.tableRx);
             obj.app.TxTable.Data = array2table(obj.tx.xy_m);
+            obj.app.TxTable.Data.Var5 = logical(obj.tx.xy_m(:,end));
             obj.app.RxTable.Data = array2table(obj.rx.xy_m);
+            obj.app.RxTable.Data.Var5 = logical(obj.rx.xy_m(:,end));
             obj = Compute(obj);
         end
         
@@ -314,7 +628,7 @@ classdef THzAntennaArray < handle
             else
                 savePathFull = [];
             end
-            if ~exist(savePathFull,'file')
+            if exist(savePathFull,'file')
                 [filename,pathname] = uiputfile("./saved/antennaArrays/*.mat","Select Desired File Location + Name for Save");
                 
                 if filename == 0
@@ -331,6 +645,28 @@ classdef THzAntennaArray < handle
             savedwav = struct();
             savedwav = getFields(savedwav,obj.wav,["app","isApp"]);
             save(savePathFull,"savedant","savedwav");
+        end
+        
+        function outstr = getEstTime(obj,tocs,currentInd,totalInd)
+            % Estimates the time until completion
+            
+            avgtoc = mean(tocs(1:currentInd))*(totalInd - currentInd);
+            hrrem = floor(avgtoc/3600);
+            avgtoc = avgtoc - floor(avgtoc/3600)*3600;
+            minrem = floor(avgtoc/60);
+            avgtoc = avgtoc - floor(avgtoc/60)*60;
+            secrem = round(avgtoc);
+            
+            if hrrem < 10
+                hrrem = "0" + hrrem;
+            end
+            if minrem < 10
+                minrem = "0" + minrem;
+            end
+            if secrem < 10
+                secrem = "0" + secrem;
+            end
+            outstr = hrrem + ":" + minrem + ":" + secrem;
         end
     end
 end

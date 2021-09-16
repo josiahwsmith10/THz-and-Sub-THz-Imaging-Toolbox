@@ -169,6 +169,10 @@ classdef THzTarget < handle
             
             obj.xyz_m = cat(1,obj.xyz_m,temp_xyz_m);
             obj.amp = cat(1,obj.amp,temp_amp);
+            
+            if obj.isApp
+                obj.app.NumTargetsEditField.Value = size(temp_xyz_m,1);
+            end
         end
         
         function obj = getPNGParameters(obj)
@@ -220,7 +224,7 @@ classdef THzTarget < handle
                 loadSTL(obj);
             end
             
-            temp_xyz_m = single(zeros(size(obj.stl.v)));
+            temp_xyz_m = zeros(size(obj.stl.v),'single');
             temp_xyz_m(:,1) = obj.stl.v(:,1);
             temp_xyz_m(:,2) = obj.stl.v(:,3);
             temp_xyz_m(:,3) = obj.stl.v(:,2);
@@ -237,6 +241,10 @@ classdef THzTarget < handle
             
             obj.xyz_m = cat(1,obj.xyz_m,temp_xyz_m);
             obj.amp = cat(1,obj.amp,temp_amp);
+            
+            if obj.isApp
+                obj.app.NumTargetsEditField_2.Value = size(temp_xyz_m,1);
+            end
         end
         
         function obj = getSTLParameters(obj)
@@ -261,6 +269,8 @@ classdef THzTarget < handle
             if obj.isApp
                 obj.app.LoadSTLLamp.Color = "yellow";
             end
+            
+            obj.stl.fileName = obj.app.STLFileNameEditField.Value;
             
             drawnow
             try
@@ -342,16 +352,349 @@ classdef THzTarget < handle
             
             obj = Get(obj);
             
+            obj.ant.ConfigurePattern();
+            
+            try
+                [obj,W,w] = computeWeightsFast(obj);
+            catch
+                try
+                    [obj,W,w] = computeWeightsSlow(obj);
+                catch
+                    W = 1;
+                    w.isFail = true;
+                end
+            end
+            
             if obj.isGPU
                 reset(gpuDevice)
             end
             
+            [obj,R_T_plus_R_R,amplitudeFactor] = computeDistances(obj);
+            
+            if obj.isGPU && ~obj.isLong
+                amplitudeFactor = gpuArray(amplitudeFactor);
+                R_T_plus_R_R = gpuArray(R_T_plus_R_R);
+                
+                if ismatrix(W)
+                    W_temp = gpuArray(W);
+                else
+                    W_temp = 1;
+                end
+                
+                if ndims(W) ~= 3
+                    W = 1;
+                end
+            end
+            
+            if ~obj.isSilent
+                % Create the progress dialog
+                if obj.isApp
+                    d = uiprogressdlg(obj.app.UIFigure,'Title','Generating Echo Signal',...
+                        'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+                else
+                    d = waitbar(0,'1','Name',' Generating Beat Signal...',...
+                        'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
+                end
+            end
+            
+            try
+                obj = computeTargetFast(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W);
+            catch
+                try
+                    obj = computeTargetFast2(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W,w);
+                catch
+                    if obj.isSilent
+                        obj.isSilent = false;
+                        % Create the progress dialog
+                        if obj.isApp
+                            d = uiprogressdlg(obj.app.UIFigure,'Title','Generating Echo Signal',...
+                                'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+                        end
+                    end
+                    try
+                        R_T_plus_R_R = gather(R_T_plus_R_R);
+                        obj = computeTargetLarge(obj,R_T_plus_R_R,d);
+                    catch
+                        R_T_plus_R_R = [];
+                        obj = computeTargetSlow(obj,d);
+                    end
+                end
+            end
+            
+            if ~obj.isSilent
+                delete(d);
+            end
+            
+            % Reshape echo signal
+            obj.sarData = reshape(obj.sarData,[obj.scanner.sarSize,obj.wav.Nk]);
+        end
+        
+        function obj = computeTargetFast(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W)
+            % Fast method - loops over k
+            
+            obj.sarData = zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk,'single');
+            
+            if ~obj.isSilent
+                tocs = zeros(1,obj.wav.Nk,'single');
+            end
+            
+            for indK = 1:obj.wav.Nk
+                if ~obj.isSilent
+                    if obj.isApp
+                        if d.CancelRequested
+                            warning("Beat Signal not Computed!")
+                            obj.sarData = zeros([obj.scanner.sarSize,obj.wav.Nk],'single');
+                            return;
+                        end
+                    else
+                        if getappdata(d,'canceling')
+                            warning("Beat Signal not Computed!")
+                            obj.sarData = zeros([obj.scanner.sarSize,obj.wav.Nk]);
+                            delete(d);
+                            return;
+                        end
+                    end
+                    tic
+                end
+                
+                if ndims(W) == 3
+                    W_temp = gpuArray(W(:,:,indK));
+                end
+                
+                temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R);
+                temp = amplitudeFactor .* temp;
+                
+                obj.sarData(:,indK) = single(gather(sum(W_temp .* temp,2)));
+                if ~obj.isSilent
+                    % Update the progress dialog
+                    tocs(indK) = toc;
+                    if obj.isApp
+                        d.Value = indK/obj.wav.Nk;
+                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk);
+                    else
+                        waitbar(indK/obj.wav.Nk,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk));
+                    end
+                end
+            end
+        end
+        
+        function obj = computeTargetFast2(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W,w)
+            % Fast method 2 - loops over target voxels
+            
+            obj.sarData = zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk,'single');
+            
+            if ~obj.isSilent
+                tocs = zeros(1,obj.numTargets,'single');
+            end
+            
+            for indTarget = 1:obj.numTargets
+                if ~obj.isSilent
+                    if obj.isApp
+                        if d.CancelRequested
+                            warning("Beat Signal not Computed!")
+                            obj.sarData = zeros([obj.scanner.sarSize,obj.wav.Nk],'single');
+                            return;
+                        end
+                    else
+                        if getappdata(d,'canceling')
+                            warning("Beat Signal not Computed!")
+                            obj.sarData = zeros([obj.scanner.sarSize,obj.wav.Nk],'single');
+                            delete(d);
+                            return;
+                        end
+                    end
+                    tic
+                end
+                
+                if ndims(W) == 3
+                    W_temp = squeeze(W(:,indTarget,:));
+                    if obj.isGPU
+                        W_temp = gpuArray(W_temp);
+                    end
+                elseif ~isscalar(W)
+                    W_temp = squeeze(W(:,indTarget));
+                    if obj.isGPU
+                        W_temp = gpuArray(W_temp);
+                    end
+                end
+                
+                if w.isFail
+                    [obj,W_temp] = computeWeightsDuring(obj);
+                end
+                
+                temp = exp(1j*obj.wav.k.*R_T_plus_R_R(:,indTarget));
+                temp = amplitudeFactor(:,indTarget) .* temp;
+                
+                W_temp2 = W_temp(:,indTarget,:);
+                
+                obj.sarData = obj.sarData + single(gather(W_temp2 .* temp));
+                % Update the progress dialog
+                if ~obj.isSilent
+                    tocs(indTarget) = toc;
+                    if obj.isApp
+                        d.Value = indTarget/obj.app.target.numTargets;
+                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.app.target.numTargets);
+                    else
+                        waitbar(indTarget/obj.numTargets,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.numTargets));
+                    end
+                end
+            end
+        end
+        
+        function obj = computeTargetSlow(obj,d,W_temp,W)
+            
+            obj.sarData = zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk,'single');
+            
+            if obj.isApp
+                d.Title = "Generating Echo Signal Using Slow Method";
+            else
+                disp("Generating Echo Signal Using Slow Method");
+            end
+            % Always works method
+            tocs = zeros(1,obj.wav.Nk*obj.numTargets,'single');
+            count = 0;
+            for indSAR = 1:size(obj.scanner.rx.xyz_m,1)
+                tic
+                if ~(isAppEPC(obj.app) || obj.ant.isEPC)
+                    obj.R = struct;
+                    obj.R.tx = pdist2(obj.scanner.tx.xyz_m(indSAR,:),obj.xyz_m);
+                    obj.R.rx = pdist2(obj.scanner.rx.xyz_m(indSAR,:),obj.xyz_m);
+                    R_T_plus_R_R = obj.R.tx + obj.R.rx;
+                    
+                    % Amplitude Factor
+                    if obj.isAmplitudeFactor
+                        amplitudeFactor = obj.amp./(obj.R.tx .* obj.R.rx);
+                    else
+                        amplitudeFactor = 1;
+                    end
+                else
+                    obj.R = pdist2(obj.scanner.vx.xyz_m(indSAR,:),obj.xyz_m);
+                    
+                    % Get echo signal
+                    R_T_plus_R_R = 2*obj.R;
+                    if obj.isAmplitudeFactor
+                        amplitudeFactor = obj.amp./(obj.R).^2;
+                    else
+                        amplitudeFactor = single(1);
+                    end
+                end
+                
+                if obj.isGPU
+                    amplitudeFactor = gpuArray(amplitudeFactor);
+                    R_T_plus_R_R = gpuArray(R_T_plus_R_R);
+                end
+                
+                for indK = 1:obj.wav.Nk
+                    if obj.isApp && d.CancelRequested
+                        warning("Beat Signal not Computed!")
+                        obj.sarData = zeros([obj.scanner.sarSize,obj.wav.Nk],'single');
+                        return;
+                    end
+                    
+                    if ndims(W) == 3
+                        W_temp = gpuArray(W(:,:,indK));
+                    end
+                    W_temp2 = W_temp(indSAR,:,:);
+                    
+                    count = count + 1;
+                    temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R);
+                    
+                    if obj.isAmplitudeFactor
+                        temp = amplitudeFactor .* temp;
+                    end
+                    
+                    obj.sarData(indSAR,indK) = single(gather(sum(W_temp2 .* temp,2)));
+                    % Update the progress dialog
+                    tocs(count) = toc;
+                    if obj.isApp
+                        d.Value = count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1));
+                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1));
+                    else
+                        disp(count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1))*100 + "% Done. Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1)));
+                    end
+                end
+            end
+        end
+        
+        function obj = computeTargetLarge(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W)
+            
+            obj.sarData = zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk,'single');
+            
+            R_T_plus_R_R = gather(R_T_plus_R_R);
+            
+            if obj.isApp
+                selection = uiconfirm(obj.app.UIFigure,'Would you like to use the large target computation method (CPU intensive, likely time intensive)?','Use Large Target Method?',...
+                    'Icon','warning');
+                if string(selection) == "Cancel"
+                    UIFigureCloseRequest(obj.app, 0);
+                    return;
+                end
+                d.Title = "Generating Echo Signal Using Large Target Method";
+            end
+            [R_unique,~,IC] = unique(R_T_plus_R_R,'stable');
+            if obj.isGPU
+                R_unique = gpuArray(R_unique);
+            end
+            % Remember R_T_plus_R_R = reshape(R_unique(IC),size(R_T_plus_R_R));
+            
+            sizeR = size(R_T_plus_R_R);
+            R_T_plus_R_R = 0;
+            
+            try
+                [temp,~,IC2] = unique(mod(R_unique.*obj.wav.k,2*pi),'stable');
+                % Remember R_unique = reshape(temp(IC2),size(R_unique));
+            catch
+                R_unique = gather(R_unique);
+                [temp,~,IC2] = unique(mod(R_unique.*obj.wav.k,2*pi),'stable');
+                % Remember R_unique = reshape(temp(IC2),size(R_unique));
+            end
+            
+            if obj.isGPU
+                temp = gpuArray(temp);
+            end
+            
+            temp2 = gather(exp(1j*temp));
+            
+            temp3 = reshape(temp2(IC2),[length(R_unique),obj.wav.Nk]);
+            
+            tocs = zeros(1,obj.wav.Nk,'single');
+            for indK = 1:obj.wav.Nk
+                if obj.isApp && d.CancelRequested
+                    warning("Beat Signal not Computed!")
+                    obj.sarData = zeros([obj.scanner.sarSize,obj.wav.Nk],'single');
+                    return;
+                end
+                tic
+                
+                if ndims(W) == 3
+                    W_temp = gpuArray(W(:,:,indK));
+                end
+                
+                temp = reshape(temp3(IC,indK),sizeR);
+                
+                if obj.isAmplitudeFactor
+                    temp = amplitudeFactor .* temp;
+                end
+                
+                obj.sarData(:,indK) = single(gather(sum(W_temp .* temp,2)));
+                % Update the progress dialog
+                tocs(indK) = toc;
+                if obj.isApp
+                    d.Value = indK/obj.wav.Nk;
+                    d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk);
+                else
+                    disp(count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1))*100 + "% Done. Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1)));
+                end
+            end
+        end
+        
+        function [obj,R_T_plus_R_R,amplitudeFactor] = computeDistances(obj)
             if ~(isAppEPC(obj.app) || obj.ant.isEPC)
                 % Get distances
                 try
                     obj.R = struct;
-                    obj.R.tx = pdist2(obj.scanner.rx.xyz_m,obj.xyz_m);
-                    obj.R.rx = pdist2(obj.scanner.tx.xyz_m,obj.xyz_m);
+                    obj.R.tx = pdist2(obj.scanner.tx.xyz_m,obj.xyz_m);
+                    obj.R.rx = pdist2(obj.scanner.rx.xyz_m,obj.xyz_m);
                     R_T_plus_R_R = obj.R.tx + obj.R.rx;
                     
                     % Amplitude Factor
@@ -385,120 +728,96 @@ classdef THzTarget < handle
                     obj.isLong = true;
                 end
             end
+        end
+        
+        function [obj,W,w] = computeWeightsFast(obj)
+            % Computes the weight matrix between each antenna element and
+            % target voxel based on the antenna pattern
             
-            if obj.isGPU && ~obj.isLong
-                amplitudeFactor = gpuArray(amplitudeFactor);
-                R_T_plus_R_R = gpuArray(R_T_plus_R_R);
+            % Determine size
+            [az,el] = getAngles(obj.xyz_m(1,:),obj.scanner.rx.unique);
+            gainRx = obj.ant.computePattern(az,el);
+            
+            if isscalar(gainRx)
+                W = single(1);
+                w.isFail = false;
+                return;
             end
+            
             if ~obj.isSilent
                 % Create the progress dialog
                 if obj.isApp
-                    d = uiprogressdlg(obj.app.UIFigure,'Title','Generating Echo Signal',...
+                    d = uiprogressdlg(obj.app.UIFigure,'Title','Computing Antenna Array Weights',...
                         'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
                 else
-                    d = waitbar(0,'1','Name',' Generating Beat Signal...',...
+                    d = waitbar(0,'1','Name',' Computing Antenna Array Weights...',...
                         'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
                 end
+                tocs = zeros(obj.numTargets,1,'single');
             end
             
-            obj.sarData = single(zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk));
+            % Try all angles at once
+            if ~(isAppEPC(obj.app) || obj.ant.isEPC)
+                % Using MIMO elements
+                numAntTx = size(obj.scanner.tx.unique.xyz_m,1);
+                numAntRx = size(obj.scanner.rx.unique.xyz_m,1);
+                azAllTx = zeros(numAntTx,obj.numTargets,1,'single');
+                elAllTx = zeros(numAntTx,obj.numTargets,1,'single');
+                azAllRx = zeros(numAntRx,obj.numTargets,1,'single');
+                elAllRx = zeros(numAntRx,obj.numTargets,1,'single');
+            else
+                % Using EPC elements
+                numAntVx = size(obj.scanner.tx.unique.xyz_m,1);
+                azAllVx = zeros(numAntVx,obj.numTargets,1,'single');
+                elAllVx = zeros(numAntVx,obj.numTargets,1,'single');
+            end
             
-            try
-                if obj.isLong
-                    error("oops");
+            for indTarget = 1:obj.numTargets
+                if ~obj.isSilent
+                    if obj.isApp
+                        if d.CancelRequested
+                            warning("Array Weights not Computed!")
+                            W = 1;
+                            return;
+                        end
+                    else
+                        if getappdata(d,'canceling')
+                            warning("Array Weights not Computed!")
+                            W = 1;
+                            delete(d);
+                            return;
+                        end
+                    end
+                    tic
                 end
                 
-                % Fast method
-                if ~obj.isSilent
-                    tocs = zeros(1,obj.wav.Nk);
-                end
-                for indK = 1:obj.wav.Nk
-                    if ~obj.isSilent
-                        if obj.isApp
-                            if d.CancelRequested
-                                warning("Beat Signal not Computed!")
-                                obj.sarData = single(zeros([obj.scanner.sarSize,obj.wav.Nk]));
-                                return;
-                            end
-                        else
-                            if getappdata(d,'canceling')
-                                warning("Beat Signal not Computed!")
-                                obj.sarData = single(zeros([obj.scanner.sarSize,obj.wav.Nk]));
-                                delete(d);
-                                return;
-                            end
-                        end
-                        tic
-                    end
-                    temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R);
-                    temp = amplitudeFactor .* temp;
+                if ~(isAppEPC(obj.app) || obj.ant.isEPC)
+                    % Using MIMO elements
+                    [az,el] = getAngles(obj.xyz_m(indTarget,:),obj.scanner.tx.unique);
                     
-                    obj.sarData(:,indK) = single(gather(sum(temp,2)));
-                    if ~obj.isSilent
-                        % Update the progress dialog
-                        tocs(indK) = toc;
-                        if obj.isApp
-                            d.Value = indK/obj.wav.Nk;
-                            d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk);
-                        else
-                            waitbar(indK/obj.wav.Nk,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk));
-                        end
-                    end
+                    azAllTx(:,indTarget) = az;
+                    elAllTx(:,indTarget) = el;
+                    
+                    [az,el] = getAngles(obj.xyz_m(indTarget,:),obj.scanner.rx.unique);
+                    
+                    azAllRx(:,indTarget) = az;
+                    elAllRx(:,indTarget) = el;
+                else
+                    % Using EPC elements
+                    [az,el] = getAngles(obj.xyz_m(indTarget,:),obj.scanner.vx.unique);
+                    
+                    azAllVx(:,indTarget) = az;
+                    elAllVx(:,indTarget) = el;
                 end
-            catch
-                try
-                    % Fast method 2
-                    if ~obj.isSilent
-                        tocs = zeros(1,obj.numTargets);
-                    end
-                    for indTarget = 1:obj.numTargets
-                        if ~obj.isSilent
-                            if obj.isApp
-                                if d.CancelRequested
-                                    warning("Beat Signal not Computed!")
-                                    obj.sarData = single(zeros([obj.scanner.sarSize,obj.wav.Nk]));
-                                    return;
-                                end
-                            else
-                                if getappdata(d,'canceling')
-                                    warning("Beat Signal not Computed!")
-                                    obj.sarData = single(zeros([obj.scanner.sarSize,obj.wav.Nk]));
-                                    delete(d);
-                                    return;
-                                end
-                            end
-                            tic
-                        end
-                        temp = exp(1j*obj.wav.k.*R_T_plus_R_R(:,indTarget));
-                        temp = amplitudeFactor .* temp;
-                        
-                        obj.sarData = obj.sarData + single(gather(temp));
-                        % Update the progress dialog
-                        if ~obj.isSilent
-                            tocs(indTarget) = toc;
-                            if obj.isApp
-                                d.Value = indTarget/obj.app.target.numTargets;
-                                d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.app.target.numTargets);
-                            else
-                                waitbar(indTarget/obj.numTargets,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.numTargets));
-                            end
-                        end
-                    end
-                catch
-                    if obj.isSilent
-                        obj.isSilent = false;
-                        % Create the progress dialog
-                        if obj.isApp
-                            d = uiprogressdlg(obj.app.UIFigure,'Title','Generating Echo Signal',...
-                                'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
-                        end
-                    end
-                    try
-                        R_T_plus_R_R = gather(R_T_plus_R_R);
-                        obj = computeTargetLarge(obj,R_T_plus_R_R,d);
-                    catch
-                        R_T_plus_R_R = [];
-                        obj = computeTargetSlow(obj,d);
+                
+                if ~obj.isSilent
+                    % Update the progress dialog
+                    tocs(indTarget) = toc;
+                    if obj.isApp
+                        d.Value = indTarget/obj.numTargets;
+                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.numTargets);
+                    else
+                        waitbar(indTarget/obj.numTargets,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.numTargets));
                     end
                 end
             end
@@ -507,133 +826,142 @@ classdef THzTarget < handle
                 delete(d);
             end
             
-            % Reshape echo signal
-            obj.sarData = reshape(obj.sarData,[obj.scanner.sarSize,obj.wav.Nk]);
-        end
-        
-        function obj = computeTargetSlow(obj,d)
-            if obj.isApp
-                d.Title = "Generating Echo Signal Using Slow Method";
+            if ~(isAppEPC(obj.app) || obj.ant.isEPC)
+                % Using MIMO elements
+                gainTx = obj.ant.computePattern(azAllTx,elAllTx);
+                azAllTx = 0;
+                elAllTx = 0;
+                gainRx = obj.ant.computePattern(azAllRx,elAllRx);
+                azAllRx = 0;
+                elAllRx = 0;
+                
+                W = gainTx(obj.scanner.tx.unique.IC,:,:) .* gainRx(obj.scanner.rx.unique.IC,:,:);
             else
-                disp("Generating Echo Signal Using Slow Method");
+                % Using EPC elements
+                gainVx = obj.ant.computePattern(azAllVx,elAllVx);
+                W = gainVx(obj.scanner.vx.unique.IC,:,:).^2;
             end
-            % Always works method
-            tocs = single(zeros(1,obj.wav.Nk*obj.numTargets));
-            count = 0;
-            for indSAR = 1:size(obj.scanner.rx.xyz_m,1)
-                tic
-                if obj.isMIMO
-                    obj.R = struct;
-                    obj.R.tx = pdist2(obj.scanner.tx.xyz_m(indSAR,:),obj.xyz_m);
-                    obj.R.rx = pdist2(obj.scanner.rx.xyz_m(indSAR,:),obj.xyz_m);
-                    R_T_plus_R_R = obj.R.tx + obj.R.rx;
-                    
-                    % Amplitude Factor
-                    if obj.isAmplitudeFactor
-                        amplitudeFactor = obj.amp./(obj.R.tx .* obj.R.rx);
-                    else
-                        amplitudeFactor = 1;
-                    end
-                else
-                    obj.R = pdist2(obj.scanner.vx.xyz_m(indSAR,:),obj.xyz_m);
-                    
-                    % Get echo signal
-                    R_T_plus_R_R = 2*obj.R;
-                    if obj.isAmplitudeFactor
-                        amplitudeFactor = obj.amp./(obj.R).^2;
-                    else
-                        amplitudeFactor = single(1);
-                    end
-                end
+            
+            w.isFail = false;
+            
+            function [az,el] = getAngles(a,b)
+                % Will get the azimuth and elevation angles between the
+                % vector a (1x3) and set of vectors b.xyz_m (Mx3)
                 
-                if obj.isGPU
-                    amplitudeFactor = gpuArray(amplitudeFactor);
-                    R_T_plus_R_R = gpuArray(R_T_plus_R_R);
-                end
+                % Elevation
+                u = a - b.xyz_m;
+                u_inner_nz = sum(u .* b.nz,2) ./ vecnorm(u,2,2);
+                el = 90 - acosd(u_inner_nz);
                 
-                for indK = 1:obj.wav.Nk
-                    if obj.isApp && d.CancelRequested
-                        warning("Beat Signal not Computed!")
-                        obj.sarData = single(zeros([obj.scanner.sarSize,obj.wav.Nk]));
-                        return;
-                    end
-                    count = count + 1;
-                    temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R);
-                    if obj.isAmplitudeFactor
-                        temp = amplitudeFactor .* temp;
-                    end
-                    
-                    obj.sarData(indSAR,indK) = single(gather(sum(temp,2)));
-                    % Update the progress dialog
-                    tocs(count) = toc;
-                    if obj.isApp
-                        d.Value = count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1));
-                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1));
-                    else
-                        disp(count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1))*100 + "% Done. Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1)));
-                    end
-                end
+                % Azimuth
+                u_proj = u - sum(u .* b.nz,2);
+                u_proj_inner_nx = sum(u_proj .* b.nx,2) ./ vecnorm(u_proj,2,2);
+                az = acosd(u_proj_inner_nx);
             end
         end
         
-        function obj = computeTargetLarge(obj,R_T_plus_R_R,d)
-            R_T_plus_R_R = gather(R_T_plus_R_R);
+        function [obj,W,w] = computeWeightsSlow(obj)
+            % Computes the weight matrix between each antenna element and
+            % target voxel based on the antenna pattern
             
-            if obj.isApp
-                selection = uiconfirm(obj.app.UIFigure,'Would you like to use the large target computation method (CPU intensive, likely time intensive)?','Use Large Target Method?',...
-                    'Icon','warning');
-                if string(selection) == "Cancel"
-                    UIFigureCloseRequest(obj.app, 0);
-                    return;
+            % Determine size
+            [az,el] = getAngles(obj.xyz_m(1,:),obj.scanner.rx.unique);
+            gainRx = obj.ant.computePattern(az,el);
+            
+            if isscalar(gainRx)
+                W = single(1);
+                w.isFail = false;
+                return;
+            elseif iscolumn(gainRx)
+                W = zeros(size(gainRx,1),obj.numTargets,'single');
+            elseif ismatrix(gainRx)
+                W = zeros(size(gainRx,1),obj.numTargets,obj.wav.Nk,'single');
+            end
+            
+            if ~obj.isSilent
+                % Create the progress dialog
+                if obj.isApp
+                    d = uiprogressdlg(obj.app.UIFigure,'Title','Computing Antenna Array Weights',...
+                        'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+                else
+                    d = waitbar(0,'1','Name',' Computing Antenna Array Weights...',...
+                        'CreateCancelBtn','setappdata(gcbf,''canceling'',1)');
                 end
-                d.Title = "Generating Echo Signal Using Large Target Method";
+                tocs = zeros(obj.numTargets,1,'single');
             end
-            [R_unique,~,IC] = unique(R_T_plus_R_R,'stable');
-            if obj.isGPU
-                R_unique = gpuArray(R_unique);
-            end
-            % Remember R_T_plus_R_R = reshape(R_unique(IC),size(R_T_plus_R_R));
             
-            sizeR = size(R_T_plus_R_R);
-            R_T_plus_R_R = 0;
+            % Do one target voxel at a time
             
-            try
-                [temp,~,IC2] = unique(mod(R_unique.*obj.wav.k,2*pi),'stable');
-                % Remember R_unique = reshape(temp(IC2),size(R_unique));
-            catch
-                R_unique = gather(R_unique);
-                [temp,~,IC2] = unique(mod(R_unique.*obj.wav.k,2*pi),'stable');
-                % Remember R_unique = reshape(temp(IC2),size(R_unique));
-            end
-            if obj.isGPU
-                temp = gpuArray(temp);
-            end
-            temp2 = gather(exp(1j*temp));
-            
-            temp3 = reshape(temp2(IC2),[length(R_unique),obj.wav.Nk]);
-            
-            tocs = zeros(1,obj.wav.Nk);
-            for indK = 1:obj.wav.Nk
-                if obj.isApp && d.CancelRequested
-                    warning("Beat Signal not Computed!")
-                    obj.sarData = single(zeros([obj.scanner.sarSize,obj.wav.Nk]));
-                    return;
-                end
-                tic
-                temp = reshape(temp3(IC,indK),sizeR);
-                if obj.isAmplitudeFactor
-                    temp = amplitudeFactor .* temp;
+            for indTarget = 1:obj.numTargets
+                if ~obj.isSilent
+                    if obj.isApp
+                        if d.CancelRequested
+                            warning("Array Weights not Computed!")
+                            W = 1;
+                            return;
+                        end
+                    else
+                        if getappdata(d,'canceling')
+                            warning("Array Weights not Computed!")
+                            W = 1;
+                            delete(d);
+                            return;
+                        end
+                    end
+                    tic
                 end
                 
-                obj.sarData(:,indK) = single(gather(sum(temp,2)));
-                % Update the progress dialog
-                tocs(indK) = toc;
-                if obj.isApp
-                    d.Value = indK/obj.wav.Nk;
-                    d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk);
+                if ~(isAppEPC(obj.app) || obj.ant.isEPC)
+                    % Using MIMO elements
+                    [az,el] = getAngles(obj.xyz_m(indTarget,:),obj.scanner.tx.unique);
+                    gainTx = obj.ant.computePattern(az,el);
+                    
+                    [az,el] = getAngles(obj.xyz_m(indTarget,:),obj.scanner.rx.unique);
+                    gainRx = obj.ant.computePattern(az,el);
+                    
+                    W(:,indTarget,:) = gainTx .* gainRx;
                 else
-                    disp(count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1))*100 + "% Done. Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1)));
+                    % Using EPC elements
+                    [az,el] = getAngles(obj.xyz_m(indTarget,:),obj.scanner.vx.unique);
+                    gain = obj.ant.computePattern(az,el);
+                    
+                    W(:,indTarget,:) = gain.^2;
                 end
+                
+                if ~obj.isSilent
+                    % Update the progress dialog
+                    tocs(indTarget) = toc;
+                    if obj.isApp
+                        d.Value = indTarget/obj.numTargets;
+                        d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.numTargets);
+                    else
+                        waitbar(indTarget/obj.numTargets,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,obj.numTargets));
+                    end
+                end
+            end
+            
+            if ~obj.isSilent
+                delete(d);
+            end
+            
+            w.isFail = false;
+            
+            function [az,el] = getAngles(a,b)
+                % Will get the azimuth and elevation angles between the
+                % vector a (1x3) and set of vectors b (Mx3)
+                
+                % Elevation
+                u = a - b.xyz_m;
+                u_inner_nz = sum(u .* b.nz,2) ./ vecnorm(u,2,2);
+                el = 90 - acosd(u_inner_nz);
+                
+                % Azimuth
+                u_proj = u - sum(u .* b.nz,2);
+                u_proj_inner_nx = sum(u_proj .* b.nx,2) ./ vecnorm(u_proj,2,2);
+                az = acosd(u_proj_inner_nx);
+                
+                el = el(b.IC);
+                az = az(b.IC);
             end
         end
         
@@ -644,7 +972,7 @@ classdef THzTarget < handle
             set(0,'DefaultFigureWindowStyle','docked')
             
             % AntAxes
-            obj.fig.f = figure;
+            obj.fig.f = figure(2);
             obj.fig.h = handle(axes);
         end
         

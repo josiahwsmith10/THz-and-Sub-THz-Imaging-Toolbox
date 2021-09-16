@@ -74,7 +74,11 @@ classdef THzWaveformParameters < handle
         function obj = Compute(obj)
             % Compute the parameters given the current values in the app
             
-            obj.K = obj.fS*obj.B/(obj.Nk-1);
+            if obj.Nk > 1
+                obj.K = obj.fS*obj.B/(obj.Nk-1);
+            else
+                obj.K = 0;
+            end
             
             obj.rangeMax_m = obj.fS*obj.c/(2*obj.K);
             obj.rangeResolution_m = obj.c/(2*obj.B);

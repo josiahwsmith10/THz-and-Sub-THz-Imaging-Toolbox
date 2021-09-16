@@ -241,7 +241,7 @@ classdef THzImageReconstruction < handle
             CloseFigures(obj);
             set(0,'DefaultFigureWindowStyle','docked')
             
-            obj.fig.f = figure;
+            obj.fig.f = figure(3);
             obj.fig.h = handle(axes);
         end
         
@@ -257,7 +257,7 @@ classdef THzImageReconstruction < handle
         function Display(obj)
             % Displays the reconstructed image in a figure
             
-            if isempty(obj.fig.f)
+            if isempty(obj.fig.f) || ~isvalid(obj.fig.h)
                 obj = InitializeFigures(obj);
             end
             
