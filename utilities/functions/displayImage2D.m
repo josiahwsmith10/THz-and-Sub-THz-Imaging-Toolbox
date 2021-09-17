@@ -33,12 +33,12 @@ hc = colorbar(h);
 view(h,2)
 caxis(h,[im.dBMin 0])
 
-ylabel(hc, 'dB','fontsize',im.fontSize)
-xlabel(h,xlab,'fontsize',im.fontSize)
-ylabel(h,ylab,'fontsize',im.fontSize)
+ylabel(hc, 'dB','fontsize',im.fontSize,"interpreter","latex")
+xlabel(h,xlab,'fontsize',im.fontSize,"interpreter","latex")
+ylabel(h,ylab,'fontsize',im.fontSize,"interpreter","latex")
 xlim(h,[x_m(1),x_m(end)])
 ylim(h,[y_m(1),y_m(end)])
-title(h,"Reconstructed Image",'fontsize',im.fontSize)
+title(h,"Reconstructed Image",'fontsize',im.fontSize,"interpreter","latex")
 
 if im.isApp
     figure(im.fig.f)

@@ -73,6 +73,7 @@ classdef THzAntennaArray < handle
             end
             
             obj.a.typeOld = "";
+            obj.a.type = "Isotropic";
             obj.p.isConfigured = false;
             obj.p.isWidebandConfigured = false;
             obj.p.isWideband = false;
@@ -283,8 +284,10 @@ classdef THzAntennaArray < handle
             % pattern with the specified azimuth and elevation angle and
             % frequency
             
-            obj = GetAntenna(obj);
-            
+            if obj.isApp
+                obj = GetAntenna(obj);
+            end
+                
             % Only execute this command if the type is new
             if obj.p.isConfigured || obj.a.type == "Isotropic"
                 obj.p.isConfigured = true;

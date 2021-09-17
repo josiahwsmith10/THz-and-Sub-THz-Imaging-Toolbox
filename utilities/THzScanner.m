@@ -423,7 +423,7 @@ classdef THzScanner < handle
                     obj.fig.sarh = handle(subplot(122));
                 end
             else
-                obj.fig.f = figure(1);
+                obj.fig.f = figure;
                 obj.fig.h = handle(axes);
             end
         end
@@ -627,7 +627,7 @@ classdef THzScanner < handle
             %   tf = true - antenna array is colinear
             %   tf = false - antenna array is not colinear
             
-            if isempty(obj.ant.tx.xyz_m) || isempty(obj.ant.rx.xyz_m);
+            if isempty(obj.ant.tx.xyz_m) || isempty(obj.ant.rx.xyz_m)
                 tf = false;
                 return;
             end

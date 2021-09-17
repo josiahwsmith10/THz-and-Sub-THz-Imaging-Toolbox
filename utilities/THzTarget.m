@@ -542,6 +542,8 @@ classdef THzTarget < handle
         end
         
         function obj = computeTargetSlow(obj,d,W_temp,W)
+            % Compute sarData by looping over antenna elements and
+            % frequency
             
             obj.sarData = zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk,'single');
             
@@ -617,6 +619,7 @@ classdef THzTarget < handle
         end
         
         function obj = computeTargetLarge(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W)
+            % Compute sarData for a large target using unique find method
             
             obj.sarData = zeros(size(obj.scanner.tx.xyz_m,1),obj.wav.Nk,'single');
             
@@ -689,6 +692,8 @@ classdef THzTarget < handle
         end
         
         function [obj,R_T_plus_R_R,amplitudeFactor] = computeDistances(obj)
+            % Computes the distances for the Tx and Rx elements
+            
             if ~(isAppEPC(obj.app) || obj.ant.isEPC)
                 % Get distances
                 try
@@ -972,7 +977,7 @@ classdef THzTarget < handle
             set(0,'DefaultFigureWindowStyle','docked')
             
             % AntAxes
-            obj.fig.f = figure(2);
+            obj.fig.f = figure;
             obj.fig.h = handle(axes);
         end
         

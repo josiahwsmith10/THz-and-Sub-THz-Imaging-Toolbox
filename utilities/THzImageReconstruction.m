@@ -241,7 +241,7 @@ classdef THzImageReconstruction < handle
             CloseFigures(obj);
             set(0,'DefaultFigureWindowStyle','docked')
             
-            obj.fig.f = figure(3);
+            obj.fig.f = figure;
             obj.fig.h = handle(axes);
         end
         

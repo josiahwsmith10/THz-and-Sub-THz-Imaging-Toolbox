@@ -23,12 +23,14 @@ imgY = imgY/max(imgY(:));
 imgY_dB = db(imgY);
 clear imgXYZ imgZXY
 
+colormap(h,'jet')
 plot(h,x_m,imgY_dB)
-xlabel(xlab,'fontsize',im.fontSize)
-ylabel(h,'dB','fontsize',im.fontSize)
+
+xlabel(xlab,'fontsize',im.fontSize,"interpreter","latex")
+ylabel(h,'dB','fontsize',im.fontSize,"interpreter","latex")
 xlim(h,[im.y_m(1),im.y_m(end)])
 ylim(h,[im.dBMin 0])
-title(h,"Reconstructed Image",'fontsize',im.fontSize)
+title(h,"Reconstructed Image",'fontsize',im.fontSize,"interpreter","latex")
 
 if im.isApp
     figure(im.fig.f)
