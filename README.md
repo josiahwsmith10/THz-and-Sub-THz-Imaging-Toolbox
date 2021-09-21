@@ -12,7 +12,7 @@ Please cite our work as
 ```
 @article{,
    author = {Smith, J. and Torlak, M.},
-   title = {{THz} and Sub-[THz} Imaging Toolbox and Interactive {GUI}},
+   title = {Teraherta Imaging Toolbox and Interactive},
    journal = {IEEE Access},
    volume = {},
    number = {},
