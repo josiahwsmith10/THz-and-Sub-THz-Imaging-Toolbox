@@ -3,8 +3,8 @@ A toolbox for near-field THz imaging simulation and image reconstruction.
 This toolbox enables rapid development of near-field THz imaging radar systems by providing easy access to efficient simulation tools and diverse toolset with documented API. Additionally, the toolbox provides efficient generation of large near-field THz imaging scenarios useful for many data-driven applications.
 
 ### Publication and Citation
-*THz and Sub-THz Imaging Toolbox and Interactive GUI*
-IEEE Access
+*Terhertz Imaging Toolbox with Interactive User Interface*
+IEEE Open Journal of Antennas and Propagation
 
 If you appreciate our work, please cite our work as
 
@@ -12,14 +12,14 @@ Please cite our work as
 ```
 @article{,
    author = {Smith, J. and Torlak, M.},
-   title = {{THz} and Sub-[THz} Imaging Toolbox and Interactive {GUI}},
-   journal = {IEEE Access},
+   title = {Terhertz Imaging Toolbox with Interactive User Interface},
+   journal = {IEEE Open Journal of Antennas and Propagation},
    volume = {},
    number = {},
    pages = {},
    ISSN = {},
    DOI = {},
-   year = {2021},
+   year = {2022},
    type = {Journal Article}
 }
 ```
