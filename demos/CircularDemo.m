@@ -1,4 +1,4 @@
-% AntennaArray_demo - A short demonstration of the THzAntennaArray class
+% AntennaArray_demo - A short demonstration of the circular scan
 % Copyright (C) 2021 Josiah W. Smith
 %
 % This program is free software: you can redistribute it and/or modify
@@ -107,9 +107,7 @@ target.Display();
 target.isGPU = true;
 target.Compute();
 
-%% Set Image Reconstruction Parameters and Create sarImage Object
-% When the parameters of a sarImage object are changed by the user, the
-% object automatically updates itself
+%% Set Image Reconstruction Parameters and Create THzImageReconstruction Object
 im.nFFTx = 2048;
 im.nFFTy = 512;
 im.nFFTz = 512;

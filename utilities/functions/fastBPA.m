@@ -21,6 +21,21 @@ if obj.im.isApp
         'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
 end
 
+if ~obj.ant.isEPC
+    Rt = pdist2(obj.tx_xyz_m,obj.target_xyz_m);
+    Rr = pdist2(obj.rx_xyz_m,obj.target_xyz_m);
+    amplitudeFactor = Rt .* Rr;
+    R_T_plus_R_R = Rt + Rr;
+else
+    R = pdist2(obj.vx_xyz_m,obj.target_xyz_m);
+    R_T_plus_R_R = 2*R;
+    amplitudeFactor = R.^2;
+end
+
+if obj.isGPU
+    R_T_plus_R_R = gpuArray(R_T_plus_R_R);
+end
+
 obj.imXYZ = single(zeros(1,size(obj.target_xyz_m,1)));
 tocs = single(zeros(1,length(k)));
 for indK = 1:length(k)
@@ -32,26 +47,15 @@ for indK = 1:length(k)
         return;
     end
     
-    if ~obj.ant.isEPC
-        Rt = pdist2(obj.tx_xyz_m,obj.target_xyz_m);
-        Rr = pdist2(obj.rx_xyz_m,obj.target_xyz_m);
-        amplitudeFactor = Rt .* Rr;
-        R_T_plus_R_R = Rt + Rr;
-    else
-        R = pdist2(obj.vx_xyz_m,obj.target_xyz_m);
-        R_T_plus_R_R = 2*R;
-        amplitudeFactor = R.^2;
-    end
-    
-    if obj.isGPU
-        R_T_plus_R_R = gpuArray(R_T_plus_R_R);
-    end
-    
     bpaKernel = gather(exp(-1j*k(indK)*R_T_plus_R_R));
     if obj.isAmplitudeFactor
         bpaKernel = bpaKernel .* amplitudeFactor;
     end
-    obj.imXYZ = obj.imXYZ + sum(obj.sarData(:,:,indK) .* bpaKernel,1);
+    
+    temp = obj.sarData(:,:,indK) .* bpaKernel;
+    temp(isnan(temp)) = 0;
+    
+    obj.imXYZ = obj.imXYZ + sum(temp,1);
     % Update the progress dialog
     
     if ~obj.im.isSilent

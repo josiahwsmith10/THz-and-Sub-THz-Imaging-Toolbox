@@ -413,7 +413,7 @@ classdef THzTarget < handle
                         obj = computeTargetLarge(obj,R_T_plus_R_R,d);
                     catch
                         R_T_plus_R_R = [];
-                        obj = computeTargetSlow(obj,d);
+                        obj = computeTargetSlow(obj,d,W_temp,W);
                     end
                 end
             end

@@ -19,6 +19,8 @@ function mediumBPA(obj,k)
 if obj.im.isApp
     d = uiprogressdlg(obj.im.app.UIFigure,'Title','Performing BPA',...
         'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+else
+    d = [];
 end
 
 try
@@ -68,7 +70,11 @@ for indSAR = 1:numSAR
     if obj.isAmplitudeFactor
         bpaKernel = bpaKernel .* amplitudeFactor(indSAR);
     end
-    obj.imXYZ = obj.imXYZ + sum(obj.sarData(indSAR,:,:) .* bpaKernel,3);
+    
+    temp = obj.sarData(indSAR,:,:) .* bpaKernel;
+    temp(isnan(temp)) = 0;
+    
+    obj.imXYZ = obj.imXYZ + sum(temp,3);
     % Update the progress dialog
     if ~obj.im.isSilent
         tocs(indSAR) = toc;
@@ -118,7 +124,11 @@ for indTarget = 1:numTargetVoxels
     if obj.isAmplitudeFactor
         bpaKernel = bpaKernel .* amplitudeFactor;
     end
-    obj.imXYZ(indTarget) = sum(obj.sarData .* bpaKernel,'all');
+    
+    temp = obj.sarData .* bpaKernel;
+    temp(isnan(temp)) = 0;
+    
+    obj.imXYZ(indTarget) = sum(temp,'all');
     % Update the progress dialog
     if ~obj.im.isSilent
         tocs(indSAR) = toc;
@@ -166,7 +176,11 @@ for indTarget = 1:size(obj.target_xyz_m,1)
         if obj.isAmplitudeFactor
             bpaKernel = bpaKernel .* amplitudeFactor;
         end
-        obj.imXYZ(indTarget) = obj.imXYZ(indTarget) + sum(obj.sarData(:,:,indK) .* bpaKernel,1);
+        
+        temp = obj.sarData(:,:,indK) .* bpaKernel;
+        temp(isnan(temp)) = 0;
+        
+        obj.imXYZ(indTarget) = obj.imXYZ(indTarget) + sum(temp,1);
         % Update the progress dialog
         if ~obj.im.isSilent
             tocs(mod(count,length(tocs))+1) = toc;

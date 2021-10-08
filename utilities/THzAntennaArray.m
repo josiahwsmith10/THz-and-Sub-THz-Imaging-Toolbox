@@ -33,10 +33,10 @@ classdef THzAntennaArray < handle
         
         % tableTx - Array of transmitter antenna locations and states in the
         % following form:
-        %   x (m)   |   x (lambda)  |   y (m)   |   y (lambda)  |   state
-        %   A       |   B           |   C       |   D           |   1
+        %   x (lambda) |   x (mm)  |   y (lambda) |   y (mm)  |   state
+        %   A          |   B       |   C          |   D       |   1
         % Where A, B, C, and D are doubles and the x-location of the
-        % transmit element is computed by x = A + B*lambda, using lambda as
+        % transmit element is computed by x = A*lambda + B, using lambda as
         % the lambda_m property of the THzWaveformParameters object wav
         tableTx = [
             0   0   3.5 1   1
@@ -44,10 +44,10 @@ classdef THzAntennaArray < handle
         
         % tableRx - Array of receiver antenna locations and states in the
         % following form:
-        %   x (m)   |   x (lambda)  |   y (m)   |   y (lambda)  |   state
-        %   A       |   B           |   C       |   D           |   1
+        %   x (lambda) |   x (mm)  |   y (lambda) |   y (mm)  |   state
+        %   A          |   B       |   C          |   D       |   1
         % Where A, B, C, and D are doubles and the x-location of the
-        % receive element is computed by x = A + B*lambda, using lambda as
+        % receive element is computed by x = A*lambda + B, using lambda as
         % the lambda_m property of the THzWaveformParameters object wav
         tableRx = [
             0   0   0   0   1
@@ -249,8 +249,8 @@ classdef THzAntennaArray < handle
                 case "HFSS"
                     % Do nothing
                 case "Patch"
-                    if obj.wav.fC + obj.wav.B > 200e9
-                        error("Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!");
+                    if obj.wav.fC + obj.wav.B/2 > 200e9
+                        showErrorMessage(obj,"Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!");
                     end
                     obj.a.ant = design(patchMicrostrip,obj.wav.fC);
                     obj.a.ant.Length = obj.a.length_m;
@@ -258,8 +258,8 @@ classdef THzAntennaArray < handle
                     obj.p.isConfigured = false;
                     obj.p.isWidebandConfigured = false;
                 case "Dipole"
-                    if obj.wav.fC + obj.wav.B > 200e9
-                        error("Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!");
+                    if obj.wav.fC + obj.wav.B/2 > 200e9
+                        showErrorMessage(obj,"Maximum frequency MATLAB Antenna Toolbox can tolerate is 200 GHz!");
                     end
                     con = metal('Name','Copper','Conductivity', 5.96e7,'Thickness',17e-6);
                     obj.a.ant = dipole('Length',obj.a.length_m,'Width',obj.a.width_m,...
