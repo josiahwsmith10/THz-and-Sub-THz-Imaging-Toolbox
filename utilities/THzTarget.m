@@ -319,6 +319,9 @@ classdef THzTarget < handle
             temp_xyz_m = [temp_x,temp_y,temp_z];
             temp_amp = obj.rp.ampMin + (obj.rp.ampMax - obj.rp.ampMin)*rand(obj.rp.numTargets,1);
             
+            obj.xyz_m = cat(1,obj.xyz_m,temp_xyz_m);
+            obj.amp = cat(1,obj.amp,temp_amp);
+            
             if obj.isApp
                 obj.app.TargetTable.Data = array2table([temp_xyz_m,temp_amp]);
             end

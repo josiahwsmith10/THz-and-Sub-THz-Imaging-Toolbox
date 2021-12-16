@@ -68,7 +68,7 @@ for indSAR = 1:numSAR
     
     bpaKernel = gather(exp(-1j*k.*R_T_plus_R_R));
     if obj.isAmplitudeFactor
-        bpaKernel = bpaKernel .* amplitudeFactor(indSAR);
+        bpaKernel = bpaKernel .* amplitudeFactor;
     end
     
     temp = obj.sarData(indSAR,:,:) .* bpaKernel;
