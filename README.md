@@ -4,7 +4,6 @@ This toolbox enables rapid development of near-field THz imaging radar systems b
 
 ### Publication and Citation
 *Terhertz Imaging Toolbox with Interactive User Interface*
-IEEE Open Journal of Antennas and Propagation
 
 If you appreciate our work, please cite our work as
 
@@ -13,7 +12,7 @@ Please cite our work as
 @article{,
    author = {Smith, J. and Torlak, M.},
    title = {Terhertz Imaging Toolbox with Interactive User Interface},
-   journal = {IEEE Open Journal of Antennas and Propagation},
+   journal = },
    volume = {},
    number = {},
    pages = {},
