@@ -33,7 +33,8 @@ For more information, visit the [WISLAB website](https://labs.utdallas.edu/wisla
 - Call "THzImagingToolbox" or "THzImagingGUI" in MATLAB
 
 ## Usage
-See the documentation in MATLAB's documentation explorer
+- See docs/THz_Toolbox_Instructions.pdf for more details
+- See the documentation in MATLAB's documentation explorer
 
 ## License
 [GPL 3.0](https://choosealicense.com/licenses/gpl-3.0/)
