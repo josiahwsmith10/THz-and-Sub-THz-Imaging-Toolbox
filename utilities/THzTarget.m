@@ -413,7 +413,7 @@ classdef THzTarget < handle
                     end
                     try
                         R_T_plus_R_R = gather(R_T_plus_R_R);
-                        obj = computeTargetLarge(obj,R_T_plus_R_R,d);
+                        obj = computeTargetLarge(obj,d,R_T_plus_R_R,amplitudeFactor,W_temp,W);
                     catch
                         R_T_plus_R_R = [];
                         obj = computeTargetSlow(obj,d,W_temp,W);
@@ -460,9 +460,11 @@ classdef THzTarget < handle
                 if ndims(W) == 3
                     W_temp = gpuArray(W(:,:,indK));
                 end
+
+                R_mask = R_T_plus_R_R <= indK*obj.wav.rangeResolution_m;
                 
-                temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R);
-                temp = amplitudeFactor .* temp;
+                temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R.*R_mask);
+                temp = amplitudeFactor .* temp .* R_mask;
                 
                 obj.sarData(:,indK) = single(gather(sum(W_temp .* temp,2)));
                 if ~obj.isSilent
@@ -525,7 +527,11 @@ classdef THzTarget < handle
                 temp = exp(1j*obj.wav.k.*R_T_plus_R_R(:,indTarget));
                 temp = amplitudeFactor(:,indTarget) .* temp;
                 
-                W_temp2 = W_temp(:,indTarget,:);
+                if ~isscalar(W_temp)
+                    W_temp2 = W_temp(:,indTarget,:);
+                else
+                    W_temp2 = W;
+                end
                 
                 obj.sarData = obj.sarData + single(gather(W_temp2 .* temp));
                 % Update the progress dialog
@@ -596,7 +602,12 @@ classdef THzTarget < handle
                     if ndims(W) == 3
                         W_temp = gpuArray(W(:,:,indK));
                     end
-                    W_temp2 = W_temp(indSAR,:,:);
+
+                    if ~isscalar(W)
+                        W_temp2 = W_temp(indSAR,:,:);
+                    else
+                        W_temp2 = W;
+                    end
                     
                     count = count + 1;
                     temp = exp(1j*obj.wav.k(indK)*R_T_plus_R_R);
@@ -686,7 +697,7 @@ classdef THzTarget < handle
                     d.Value = indK/obj.wav.Nk;
                     d.Message = "Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk);
                 else
-                    disp(count/(obj.wav.Nk*size(obj.scanner.rx.xyz_m,1))*100 + "% Done. Time Remaining: " + getEstTime(obj,tocs,count,obj.wav.Nk*size(obj.scanner.rx.xyz_m,1)));
+                    waitbar(indK/obj.wav.Nk,d,"Generating Beat Signal. Estimated Time Remaining: " + getEstTime(obj,tocs,indK,obj.wav.Nk));
                 end
             end
         end
@@ -994,7 +1005,7 @@ classdef THzTarget < handle
             % Plots either the MIMO or EPC array
             
             if isempty(obj.fig.f) || ~isvalid(obj.fig.h)
-                InitializeFigures(obj)
+                InitializeFigures(obj);
             end
             
             if isempty(obj.xyz_m)

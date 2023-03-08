@@ -1,4 +1,4 @@
-% AntennaArray_demo - A short demonstration of the cylindrical scan
+% CylindricalDemo - A short demonstration of the cylindrical scan
 % Copyright (C) 2021 Josiah W. Smith
 %
 % This program is free software: you can redistribute it and/or modify

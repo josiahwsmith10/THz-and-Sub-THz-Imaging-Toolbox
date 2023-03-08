@@ -1,4 +1,4 @@
-% AntennaArray_demo - A short demonstration of dataset generation
+% DatasetDemo - A short demonstration of dataset generation
 % Copyright (C) 2021 Josiah W. Smith
 %
 % This program is free software: you can redistribute it and/or modify

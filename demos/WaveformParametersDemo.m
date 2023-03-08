@@ -1,4 +1,4 @@
-% WaveformParameters_demo - A short demonstration of the 
+% WaveformParametersDemo - A short demonstration of the 
 % THzWaveformParameters class
 %
 % Copyright (C) 2021 Josiah W. Smith

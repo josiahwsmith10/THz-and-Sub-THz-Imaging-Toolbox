@@ -1,4 +1,4 @@
-% AntennaArray_demo - A short demonstration of the rectilinear scan
+% RectilinearDemo - A short demonstration of the rectilinear scan
 % Copyright (C) 2021 Josiah W. Smith
 %
 % This program is free software: you can redistribute it and/or modify
@@ -77,37 +77,37 @@ target.tableTarget = [
     0   0.01 0.1  1];
 
 target.png.fileName = 'circle.png';
-target.png.xStep_m = 1e-3;
-target.png.yStep_m = 1e-3;
-target.png.xOffset_m = -0.025;
-target.png.yOffset_m = 0.05;
-target.png.zOffset_m = 0.25;
+target.png.xStep_m = 4e-4;
+target.png.yStep_m = 4e-4;
+target.png.xOffset_m = -0.005;
+target.png.yOffset_m = 0.005;
+target.png.zOffset_m = 0.1;
 target.png.reflectivity = 1;
-target.png.downsampleFactor = 4;
+target.png.downsampleFactor = 1;
 
 target.stl.fileName = 'ar15.stl';
 target.stl.zCrop_m = 0.25;
 target.stl.xOffset_m = 0;
 target.stl.yOffset_m = 0;
-target.stl.zOffset_m = 0.25;
+target.stl.zOffset_m = 0.1;
 target.stl.reflectivity = 1;
 target.stl.downsampleFactor = 40;
 
-target.rp.numTargets = 16;
+target.rp.numTargets = 5;
 target.rp.xMin_m = -0.03;
 target.rp.xMax_m = 0.03;
 target.rp.yMin_m = -0.03;
 target.rp.yMax_m = 0.03;
-target.rp.zMin_m = 0.02;
-target.rp.zMax_m = 0.18;
+target.rp.zMin_m = 0.05;
+target.rp.zMax_m = 0.7;
 target.rp.ampMin = 0.5;
 target.rp.ampMax = 1;
 
 % Which to use
-target.isTable = true;
+target.isTable = false;
 target.isPNG = false;
 target.isSTL = false;
-target.isRandomPoints = false;
+target.isRandomPoints = true;
 
 target.Get();
 
