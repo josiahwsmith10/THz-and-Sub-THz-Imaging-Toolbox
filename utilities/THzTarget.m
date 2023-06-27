@@ -384,6 +384,8 @@ classdef THzTarget < handle
                 if ndims(W) ~= 3
                     W = 1;
                 end
+            else
+                W_temp = W;
             end
             
             if ~obj.isSilent
