@@ -4,15 +4,15 @@
 %
 % Copyright (C) 2021 Josiah W. Smith
 %
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% This program is free software: you can redistribute it and/or modify it
+% under the terms of the GNU General Public License as published by the
+% Free Software Foundation, either version 3 of the License, or (at your
+% option) any later version.
 %
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
+% This program is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+% Public License for more details.
 
 function mediumBPA(obj,k)
 
@@ -41,16 +41,25 @@ end
 
 obj.imXYZ = single(zeros(1,size(obj.target_xyz_m,1)));
 numSAR = size(obj.tx_xyz_m,1);
-tocs = single(zeros(1,numSAR));
+tocs = single(zeros(1,ceil(numSAR/512)));
+
+isCheckNan = max(isnan(obj.tx_xyz_m)) & max(isnan(obj.rx_xyz_m)) & max(isnan(obj.target_xyz_m));
+
+tocCount = 1;
+
 for indSAR = 1:numSAR
     tic
-    
+
+    if max(isnan(obj.vx_xyz_m(indSAR,:)))
+        continue;
+    end
+
     if obj.im.isApp && d.CancelRequested
         showErrorMessage(obj.im,"Image not computed!","User Canceled BPA")
         obj.isFail = true;
         return;
     end
-    
+
     if ~obj.ant.isEPC
         Rt = pdist2(obj.tx_xyz_m(indSAR,:),obj.target_xyz_m);
         Rr = pdist2(obj.rx_xyz_m(indSAR,:),obj.target_xyz_m);
@@ -61,29 +70,33 @@ for indSAR = 1:numSAR
         R_T_plus_R_R = 2*R;
         amplitudeFactor = R.^2;
     end
-    
+
     if obj.isGPU
         R_T_plus_R_R = gpuArray(R_T_plus_R_R);
+        amplitudeFactor = gpuArray(amplitudeFactor);
     end
-    
-    bpaKernel = gather(exp(-1j*k.*R_T_plus_R_R));
+
+    bpaKernel = exp(-1j*k.*R_T_plus_R_R);
     if obj.isAmplitudeFactor
         bpaKernel = bpaKernel .* amplitudeFactor;
     end
-    
+
     temp = obj.sarData(indSAR,:,:) .* bpaKernel;
-    temp(isnan(temp)) = 0;
-    
-    obj.imXYZ = obj.imXYZ + sum(temp,3);
+    if isCheckNan
+        temp(isnan(temp)) = 0;
+    end
+
+    obj.imXYZ = obj.imXYZ + gather(sum(temp,3));
     % Update the progress dialog
-    if ~obj.im.isSilent
-        tocs(indSAR) = toc;
+    if ~obj.im.isSilent && mod(indSAR,512) == 0
+        tocs(tocCount) = toc;
         if obj.im.isApp
             d.Value = indSAR/numSAR;
             d.Message = "Iteration " + indSAR + "/" + numSAR + ". Estimated Time Remaining: " + getEstTime(obj,tocs,indSAR,numSAR);
         else
             disp("Iteration " + indSAR + "/" + numSAR + ". Estimated Time Remaining: " + getEstTime(obj,tocs,indSAR,numSAR));
         end
+        tocCount = tocCount + 1;
     end
 end
 end
@@ -93,18 +106,20 @@ if obj.isGPU
     reset(gpuDevice)
 end
 
+isCheckNan = max(isnan(obj.tx_xyz_m)) & max(isnan(obj.rx_xyz_m)) & max(isnan(obj.target_xyz_m));
+
 obj.imXYZ = single(zeros(1,size(obj.target_xyz_m,1)));
 numTargetVoxels = size(obj.target_xyz_m,1);
 tocs = single(zeros(1,numTargetVoxels));
 for indTarget = 1:numTargetVoxels
     tic
-    
+
     if obj.im.isApp && d.CancelRequested
         showErrorMessage(obj.im,"Image not computed!","User Canceled BPA")
         obj.isFail = true;
         return;
     end
-    
+
     if ~obj.ant.isEPC
         Rt = pdist2(obj.tx_xyz_m,obj.target_xyz_m(indTarget,:));
         Rr = pdist2(obj.rx_xyz_m,obj.target_xyz_m(indTarget,:));
@@ -115,23 +130,26 @@ for indTarget = 1:numTargetVoxels
         R_T_plus_R_R = 2*R;
         amplitudeFactor = R.^2;
     end
-    
+
     if obj.isGPU
         R_T_plus_R_R = gpuArray(R_T_plus_R_R);
+        amplitudeFactor = gpuArray(amplitudeFactor);
     end
-    
-    bpaKernel = gather(exp(-1j*k.*R_T_plus_R_R));
+
+    bpaKernel = exp(-1j*k.*R_T_plus_R_R);
     if obj.isAmplitudeFactor
         bpaKernel = bpaKernel .* amplitudeFactor;
     end
-    
+
     temp = obj.sarData .* bpaKernel;
-    temp(isnan(temp)) = 0;
-    
-    obj.imXYZ(indTarget) = sum(temp,'all');
+    if isCheckNan
+        temp(isnan(temp)) = 0;
+    end
+
+    obj.imXYZ(indTarget) = gather(sum(temp,'all'));
     % Update the progress dialog
     if ~obj.im.isSilent
-        tocs(indSAR) = toc;
+        tocs(indTarget) = toc;
         if obj.im.isApp
             d.Value = indTarget/numTargetVoxels;
             d.Message = "Iteration " + indTarget + "/" + numTargetVoxels + ". Estimated Time Remaining: " + getEstTime(obj,tocs,indTarget,numTargetVoxels);
@@ -150,13 +168,13 @@ for indTarget = 1:size(obj.target_xyz_m,1)
     for indK = 1:length(k)
         tic
         count = count + 1;
-        
+
         if obj.im.isApp && d.CancelRequested
             showErrorMessage(obj.im,"Image not computed!","User Canceled BPA")
             obj.isFail = true;
             return;
         end
-        
+
         if ~obj.ant.isEPC
             Rt = pdist2(obj.tx_xyz_m,obj.target_xyz_m(indTarget,:));
             Rr = pdist2(obj.rx_xyz_m,obj.target_xyz_m(indTarget,:));
@@ -167,19 +185,19 @@ for indTarget = 1:size(obj.target_xyz_m,1)
             R_T_plus_R_R = 2*R;
             amplitudeFactor = R.^2;
         end
-        
+
         if obj.isGPU
             R_T_plus_R_R = gpuArray(R_T_plus_R_R);
         end
-        
+
         bpaKernel = gather(exp(-1j*k(indK)*R_T_plus_R_R));
         if obj.isAmplitudeFactor
             bpaKernel = bpaKernel .* amplitudeFactor;
         end
-        
+
         temp = obj.sarData(:,:,indK) .* bpaKernel;
         temp(isnan(temp)) = 0;
-        
+
         obj.imXYZ(indTarget) = obj.imXYZ(indTarget) + sum(temp,1);
         % Update the progress dialog
         if ~obj.im.isSilent

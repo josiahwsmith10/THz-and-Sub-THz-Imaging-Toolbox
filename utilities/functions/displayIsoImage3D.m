@@ -1,6 +1,5 @@
-% Displays the 3-D reconstructed image
-%
-% See also PLOTXYZDB.
+% Displays the 3-D reconstructed image as an iso surface with threshold of
+% im.dBMin
 %
 % Copyright (C) 2021 Josiah W. Smith
 %
@@ -14,17 +13,13 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
 % Public License for more details.
 
-function displayImage3D(im)
-if im.isIso
-    displayIsoImage3D(im);
-    return;
-end
-
+function displayIsoImage3D(im)
+clf(im.fig.f)
+im.fig.h = handle(axes(im.fig.f));
 h = im.fig.h;
-im.vSliceIndex = 1:length(im.z_m);
 
 % Organize in meshgrid format
-imgZXY = permute(abs(im.imXYZ),[3,1,2]);
+imgZXY = permute(im.imXYZ,[3,1,2]);
 
 U = reshape(im.x_m,1,[],1);
 V = reshape(im.z_m,[],1,1);
@@ -38,25 +33,18 @@ imgZXY_dB = db(imgZXY);
 clear imgXYZ imgZXY
 
 imgZXY_dB(imgZXY_dB<im.dBMin) = im.dBMin;
-imgZXY_dB(imgZXY_dB >= im.dBTh) = 0; 
 imgZXY_dB(isnan(imgZXY_dB)) = im.dBMin;
 
-hs = slice(h,meshu,meshv,meshw,imgZXY_dB,single([]),V(im.vSliceIndex),single([]));
-set(hs,'FaceColor','interp','EdgeColor','none');
-axis(h,'vis3d');
+% Create iso surface
+[faces,vertices,colors] = isosurface(meshu,meshv,meshw,imgZXY_dB,im.dBMin,ones(size(meshu)));
+patch('Vertices',vertices,'Faces',faces,'FaceVertexCData',colors,...
+    'FaceColor','interp','EdgeColor','interp');
 
-for kk=1:length(im.vSliceIndex)
-    set(hs(kk),'AlphaData',squeeze(imgZXY_dB(kk+im.vSliceIndex(1)-1,:,:)),'FaceAlpha','interp');
-end
-
-colormap(h,'jet')
-hc = colorbar(h);
-
+grid on
+colormap copper
 view(h,3)
 daspect(h,[1 1 1])
-caxis(h,[im.dBMin 0])
 
-ylabel(hc, 'dB','fontsize',im.fontSize+5,"interpreter","latex")
 xlabel(h,'x (m)','fontsize',im.fontSize,"interpreter","latex")
 ylabel(h,'z (m)','fontsize',im.fontSize,"interpreter","latex")
 zlabel(h,'y (m)','fontsize',im.fontSize,"interpreter","latex")
@@ -64,7 +52,6 @@ xlim(h,[im.xMin_m,im.xMax_m])
 ylim(h,[im.zMin_m,im.zMax_m])
 zlim(h,[im.yMin_m,im.yMax_m])
 title(h,"Reconstructed Image",'fontsize',im.fontSize,"interpreter","latex")
-
 h.FontSize = im.fontSize;
 
 if im.isApp
@@ -73,3 +60,4 @@ if im.isApp
     figure(im.app.UIFigure)
 end
 end
+

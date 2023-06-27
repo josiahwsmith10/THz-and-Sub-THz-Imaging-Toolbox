@@ -1,5 +1,4 @@
-% Computes the Y-dimension multistatic-to-monostatic approxmiation. Only
-% works for MIMO arrays whose elements are colinear
+% Computes the freehand MIMO compensation derived by Josiah
 %
 % Copyright (C) 2021 Josiah W. Smith
 %
@@ -13,7 +12,7 @@
 % MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
 % Public License for more details.
 
-function obj = mult2mono(obj)
+function obj = freehandCompensation(obj)
 % Y-dimension only multistatic-to-monostatic approximation
 if numel(obj.scanner.sarSize) == 3
     k = reshape(obj.k_vec,1,1,[]);
@@ -25,10 +24,19 @@ else
     return;
 end
 
-obj.sarData = reshape(obj.sarData,[],size(obj.sarData,3),size(obj.sarData,4),size(obj.sarData,5));
+obj.sarData = squeeze(reshape(obj.sarData,obj.ant.vx.numVx,obj.scanner.numY,obj.scanner.numX,obj.wav.Nk));
 
-obj.sarData = obj.sarData .* exp(-1j*k .* obj.ant.vx.dxy(:,2).^2 / (4*obj.zRef_m));
+dly = obj.ant.vx.dxy(:,2);
 
-obj.sarData = reshape(obj.sarData,[],size(obj.sarData,3),size(obj.sarData,4));
+dlz = -reshape(obj.scanner.vx.xyz_m(:,3),obj.ant.vx.numVx,obj.scanner.numY,obj.scanner.numX) + obj.ant.z0_m;
+
+phi_l = 2*dlz + (dly.^2)/(4*obj.zRef_m);
+
+compensationTerm = exp(-1j*k.*phi_l);
+
+obj.sarData = obj.sarData .* squeeze(compensationTerm);
+obj.sarData(isnan(obj.sarData)) = 0;
+
+obj.sarData = squeeze(reshape(obj.sarData,obj.ant.vx.numVx*obj.scanner.numY,obj.scanner.numX,obj.wav.Nk));
 
 end

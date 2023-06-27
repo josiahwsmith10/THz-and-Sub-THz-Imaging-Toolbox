@@ -4,21 +4,27 @@
 %
 % Copyright (C) 2021 Josiah W. Smith
 %
-% This program is free software: you can redistribute it and/or modify
-% it under the terms of the GNU General Public License as published by
-% the Free Software Foundation, either version 3 of the License, or
-% (at your option) any later version.
+% This program is free software: you can redistribute it and/or modify it
+% under the terms of the GNU General Public License as published by the
+% Free Software Foundation, either version 3 of the License, or (at your
+% option) any later version.
 %
-% This program is distributed in the hope that it will be useful,
-% but WITHOUT ANY WARRANTY; without even the implied warranty of
-% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-% GNU General Public License for more details.
+% This program is distributed in the hope that it will be useful, but
+% WITHOUT ANY WARRANTY; without even the implied warranty of
+% MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
+% Public License for more details.
 
 function fastBPA(obj,k)
+
+obj.sarData(isnan(obj.sarData)) = 0;
 
 if obj.im.isApp
     d = uiprogressdlg(obj.im.app.UIFigure,'Title','Performing BPA',...
         'Message',"Estimated Time Remaining: 0:0:0","Cancelable","on");
+end
+
+if obj.isGPU
+    gpuArray(ones(size(obj.tx_xyz_m,1)*2,size(obj.target_xyz_m,1),'single'));
 end
 
 if ~obj.ant.isEPC
@@ -40,24 +46,24 @@ obj.imXYZ = single(zeros(1,size(obj.target_xyz_m,1)));
 tocs = single(zeros(1,length(k)));
 for indK = 1:length(k)
     tic
-    
+
     if obj.im.isApp && d.CancelRequested
         showErrorMessage(obj.im,"Image not computed!","User Canceled BPA")
         obj.isFail = true;
         return;
     end
-    
+
     bpaKernel = gather(exp(-1j*k(indK)*R_T_plus_R_R));
     if obj.isAmplitudeFactor
         bpaKernel = bpaKernel .* amplitudeFactor;
     end
-    
+
     temp = obj.sarData(:,:,indK) .* bpaKernel;
     temp(isnan(temp)) = 0;
-    
+
     obj.imXYZ = obj.imXYZ + sum(temp,1);
     % Update the progress dialog
-    
+
     if ~obj.im.isSilent
         tocs(indK) = toc;
         if obj.im.isApp
