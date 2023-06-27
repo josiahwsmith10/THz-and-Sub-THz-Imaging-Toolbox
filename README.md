@@ -5,19 +5,51 @@ This toolbox enables rapid development of near-field THz imaging radar systems b
 ### Publication and Citation
 *Terhertz Imaging Toolbox with Interactive User Interface*
 
-If you appreciate our work, please cite our work as
+If you appreciate our work, please cite one of the papers using this toolbox
 ```
+@article{smith2023dual_radar,
+	title        = {Deep Learning-Based Multiband Signal Fusion for 3-D SAR Super-Resolution},
+	author       = {Smith, J. W. and Torlak, M.},
+	year         = 2023,
+	month        = apr,
+	journal      = {IEEE Trans. Aerosp. Electron. Syst.},
+	pages        = {1--17}
+}
+@inproceedings{smith2022vision,
+	title        = {A Vision Transformer Approach for Efficient Near-Field {SAR} Super-Resolution under Array Perturbation},
+	author       = {J. W. {Smith} and Y. {Alimam} and G. {Vedula} and M. {Torlak}},
+	year         = 2022,
+	month        = apr,
+	booktitle    = {Proc. IEEE Tex. Symp. Wirel. Microw. Circuits Syst. (WMCS)},
+	address      = {Waco, TX, USA},
+	pages        = {1--6}
+}
+@article{smith2022efficient,
+	title        = {Efficient {3-D} Near-Field {MIMO-SAR} Imaging for Irregular Scanning Geometries},
+	author       = {Smith, J. W. and Torlak, Murat},
+	year         = 2022,
+	month        = jan,
+	journal      = {IEEE Access},
+	volume       = 10,
+	pages        = {10283--10294}
+}
+@inproceedings{vasileiou2022efficient,
+	title        = {Efficient {CNN}-Based Super Resolution Algorithms for {mmWave} Mobile Radar Imaging},
+	author       = {Vasileiou, Christos and Smith, Josiah and Thiagarajan, Shiva and Nigh, Matthew and Makris, Yiorgos and Torlak, Murat},
+	year         = 2022,
+	month        = oct,
+	booktitle    = {Proc. IEEE Int. Conf. Image Process. (ICIP)},
+	address      = {Bordeaux, France},
+	pages        = {3803--3807}
+}
 @article{,
    author = {Smith, J. and Torlak, M.},
    title = {Terhertz Imaging Toolbox with Interactive User Interface},
-   journal = },
+   journal = {},
    volume = {},
    number = {},
    pages = {},
-   ISSN = {},
-   DOI = {},
-   year = {2022},
-   type = {Journal Article}
+   year = {2023},
 }
 ```
 
