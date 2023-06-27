@@ -6,8 +6,6 @@ This toolbox enables rapid development of near-field THz imaging radar systems b
 *Terhertz Imaging Toolbox with Interactive User Interface*
 
 If you appreciate our work, please cite our work as
-
-Please cite our work as
 ```
 @article{,
    author = {Smith, J. and Torlak, M.},
