@@ -258,7 +258,7 @@ classdef uniform_XY_SAR_XY_FFT < handle
 
         function displayImage(obj)
             % Display the reconstructed x-y image
-
+            
             displayImage2D(obj.im,obj.im.x_m,obj.im.y_m,"x (m)","y (m)");
         end
 
