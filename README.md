@@ -5,8 +5,6 @@ This toolbox enables rapid development of near-field THz imaging radar systems b
 - This toolbox includes algorithms for computing SAR images from irregular geometries. Demos for doing so can be found in the repository: [Efficient 3-D Near-Field MIMO-SAR Imaging for Irregular Scanning Geometries](https://github.com/josiahwsmith10/Efficient-3-D-Near-Field-MIMO-SAR-Imaging-for-Irregular-Scanning-Geometries), which follows our paper ([arXiv](https://arxiv.org/abs/2305.02064), [DOI](https://doi.org/10.1109/ACCESS.2022.3145370)) with the same title. 
 
 ### Publication and Citation
-*Terhertz Imaging Toolbox with Interactive User Interface*
-
 If you appreciate our work, please cite one of the papers using this toolbox
 ```
 @article{smith2023dual_radar,
