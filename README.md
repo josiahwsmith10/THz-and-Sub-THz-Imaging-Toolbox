@@ -3,6 +3,7 @@ A toolbox for near-field THz imaging simulation and image reconstruction.
 This toolbox enables rapid development of near-field THz imaging radar systems by providing easy access to efficient simulation tools and diverse toolset with documented API. Additionally, the toolbox provides efficient generation of large near-field THz imaging scenarios useful for many data-driven applications.
 
 - This toolbox includes algorithms for computing SAR images from irregular geometries. Demos for doing so can be found in the repository: [Efficient 3-D Near-Field MIMO-SAR Imaging for Irregular Scanning Geometries](https://github.com/josiahwsmith10/Efficient-3-D-Near-Field-MIMO-SAR-Imaging-for-Irregular-Scanning-Geometries), which follows our paper ([arXiv](https://arxiv.org/abs/2305.02064), [DOI](https://doi.org/10.1109/ACCESS.2022.3145370)) with the same title. 
+- To learn more about the reconstruction algorithms implemented in this repository, we suggest you consult the documentation in the companion repository [Introduction-to-MIMO-FMCW-Radar](https://github.com/josiahwsmith10/Introduction-to-MIMO-FMCW-Radar).
 
 ### Publication and Citation
 If you appreciate our work, please cite one of the papers using this toolbox
